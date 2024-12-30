@@ -4,6 +4,7 @@ import expressWs from "express-ws";
 export function binding() {
     const port = 3000;
     const wsapp = expressWs(express());
+    addTestRoutes(wsapp.app);
 
     wsapp.app.get("/", (req, res) => {
         console.log(JSON.stringify(req.body, null, 4));
@@ -22,7 +23,7 @@ export function binding() {
     });
 }
 
-function addTestRoutes(app: ReturnType<typeof express>) {
+function addTestRoutes(app: express.Application) {
     app.post("/test/bad-status", (req, res) => {
         res.status(400).send();
     });
