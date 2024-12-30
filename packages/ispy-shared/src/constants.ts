@@ -1,0 +1,1 @@
+export const AUTHENTICATE_ACK_TIMEOUT = 10000;
