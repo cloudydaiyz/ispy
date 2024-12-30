@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "tsc && node dist/apps/webapp/index.js",
+    "start": "tsc && node dist/apps/webapp.js",
     "wstest": "node dist/wstest.js"
   },
   "keywords": [],
@@ -16,7 +16,6 @@
   },
   "devDependencies": {
     "@types/express": "^5.0.0",
-    "@types/express-ws": "^3.0.5",
-    "typescript": "^5.7.2"
+    "@types/express-ws": "^3.0.5"
   }
 }

@@ -7,17 +7,23 @@ export function binding() {
 
     wsapp.app.get("/", (req, res) => {
         console.log(JSON.stringify(req.body, null, 4));
-        res.status(200).send("ping pong");
+        res.status(200).send("You have pinged this app.");
     });
 
     wsapp.app.ws("/", function(ws, req) {
         ws.on('message', function(msg) {
             console.log(msg);
         });
-        console.log('web socket testing', req);
+        console.log('Web socket active.', req);
     });
 
     wsapp.app.listen(port, () => {
-        console.log("This app is listening now!");
+        console.log("This app is now listening on port " + port);
+    });
+}
+
+function addTestRoutes(app: ReturnType<typeof express>) {
+    app.post("/test/bad-status", (req, res) => {
+        res.status(400).send();
     });
 }

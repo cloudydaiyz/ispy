@@ -1,4 +1,4 @@
-// API models outside of entities
+// API entity models
 
 import { z } from "zod";
 
@@ -19,19 +19,8 @@ export const BasicAuthModel = UsernameModel.merge(PasswordModel);
 export const BearerAuthModel = AccessTokenModel.merge(RefreshTokenModel);
 
 export const TaskIdModel = z.object({ taskId: z.string() });
+export const GameIdModel = z.object({ gameId: z.string() });
 export const GameExportPdfModel = z.object({ pdfLink: z.string() });
-
-export const AppMetricsModel = z.object({
-    numPlayers: z.number(),
-    numAdmins: z.number(),
-    gameRunning: z.boolean(),
-    gameLocked: z.boolean(),
-});
-
-export const CreateGameRequestModel = z.object({
-    hostUsername: z.string(),
-    hostPassword: z.string(),
-});
 
 export type Username = z.infer<typeof UsernameModel>;
 export type Password = z.infer<typeof PasswordModel>;
@@ -40,11 +29,12 @@ export type RefreshToken = z.infer<typeof RefreshTokenModel>;
 export type BasicAuth = z.infer<typeof BasicAuthModel>;
 export type BearerAuth = z.infer<typeof BearerAuthModel>;
 export type TaskId = z.infer<typeof TaskIdModel>;
+export type GameId = z.infer<typeof GameIdModel>;
 export type GameExportPdfModel = z.infer<typeof TaskIdModel>;
 
 // Main Entities
 
-export const UserRoleModel = z.enum([ "all", "player", "host", "admin" ]);
+export const UserRoleModel = z.enum(["player", "host", "admin"]);
 
 export const UserModel = z.object({
     id: z.string(),
