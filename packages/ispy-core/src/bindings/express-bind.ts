@@ -1,6 +1,14 @@
 import express from "express";
 import expressWs from "express-ws";
 
+// {
+//     'Access-Control-Allow-Origin': '*',
+//     'Access-Control-Allow-Headers': '*',
+//     'Access-Control-Allow-Method': 'OPTION,GET,POST',
+//     'Access-Control-Max-Age': 600,
+//     'Access-Control-Allow-Credentials': true,
+// }
+
 export function binding() {
     const port = 3000;
     const wsapp = expressWs(express());
@@ -25,6 +33,6 @@ export function binding() {
 
 function addTestRoutes(app: express.Application) {
     app.post("/test/bad-status", (req, res) => {
-        res.status(400).send();
+        res.status(101).send();
     });
 }

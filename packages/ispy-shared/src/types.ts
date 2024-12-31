@@ -1,11 +1,5 @@
-import * as Api from "./models";
+import * as Api from "./entities";
 
-export type GameExportPdf = { link: string };
+// Utility Types
 
-export type AppMetrics = {
-    numPlayers: number;
-    numAdmins: number;
-    gameRunning: boolean;
-    gameState: Api.GameState;
-    gameLocked: boolean;
-}
+export type OmitAuth<T> = Omit<T, keyof Api.BasicAuth | keyof Api.BearerAuth>;
