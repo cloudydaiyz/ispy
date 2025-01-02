@@ -1,0 +1,353 @@
+@import url('https://fonts.googleapis.com/css2?family=Antonio:wght@100..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Varela+Round&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Carter+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Antonio:wght@100..700&family=Cabin:ital,wght@0,400..700;1,400..700&display=swap');
+
+:root 
+{
+    --font-1: 'Varela Round', sans-serif;
+    --font-2: 'Carter One', arial, sans-serif;
+    --font-3: 'Antonio', sans-serif;
+
+    --col-1: #b9bd6f;
+    --col-2: #fff3d5;
+    --col-3: #2e5a45;
+    --col-4: #3e2412;
+
+    --gray: #555555;
+    --white: #ffffff;
+    --black: #111111;
+
+    --bg: navajowhite;
+    --bg-2: #f8fdf0;
+    --disabled: #888888;
+    --btn: #fabb18;
+    --select: #8c52ff;
+    --success: #00bf63;
+    --error: #ff5757;
+
+    /* Nice colors */
+    --a1: indianred;
+    --a2: darkred;
+    --a3: lightcoral;
+    --a4: antiquewhite;
+
+    --transition-dur: .2s;
+}
+
+*, *::before, *::after
+{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body, main
+{
+    width: 100vw;
+    height: 100vh;
+    font-family: var(--font-1);
+    overflow: hidden;
+}
+
+body
+{
+    background-color: var(--bg);
+    transition: background-color var(--transition-dur);
+}
+
+.shared-context
+{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    pointer-events: none;
+}
+
+.tooltip-container
+{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    pointer-events: none;
+}
+
+.tooltip
+{
+    background-color: var(--btn);
+    color: var(--white);
+    font-size: 1rem;
+    padding: .5rem;
+}
+
+.tooltip p
+{
+    min-width: 100%;
+}
+
+.hidden 
+{
+	animation: hide var(--transition-dur) linear forwards;
+}
+
+.tooltip.hidden
+{
+	animation: hide-tooltip var(--transition-dur) linear forwards;
+}
+
+@keyframes hide {
+    from { transform: translateY(0); }
+    to { transform: translateY(16px); opacity: 0; }
+}
+
+@keyframes hide-tooltip {
+    from { transform: translateY(0); }
+    to { transform: translateY(-100%); opacity: 0; }
+}
+
+h1, .title
+{
+    font-family: var(--font-3);
+}
+
+.title
+{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    text-align: center;
+    width: fit-content;
+    white-space: nowrap;
+    margin: 32px;
+    padding: 16px;
+
+    pointer-events: none;
+    user-select: none;
+}
+
+.title h1
+{
+    color: var(--white);
+    font-size: clamp(7rem, 10vw, 10rem);
+    z-index: 10;
+    text-shadow:
+        -2px 1px 0px var(--black), 
+        -2px 2px 0px var(--black), 
+        -1px 2px 0px var(--black), 
+        1px 1px 6px var(--gray);
+    margin-bottom: 1rem;
+    line-height: 100%;
+}
+
+.title-box 
+{
+	display: flex;
+}
+
+.title-box .inner 
+{
+	width: 400px;
+    min-height: clamp(3rem, 5vw, 5rem);
+	font-size: 4em;
+    font-size: clamp(3rem, 5vw, 5rem);
+	font-family: var(--font-3);
+	font-weight: bold;
+	white-space: nowrap;
+	overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.title-box .inner:first-child 
+{
+	background-color: rgb(from var(--btn) calc(r - 30) calc(g - 30) calc(b - 30));
+	color: rgb(from var(--btn) calc(r - 90) calc(g - 90) calc(b - 90));
+	transform-origin: right;
+	transform: perspective(100px) rotateY(-15deg);
+}
+
+.title-box .inner:last-child 
+{
+	background-color: var(--btn);
+	color: var(--col-2);
+	transform-origin: left;
+	transform: perspective(100px) rotateY(15deg);
+}
+
+.title-box .inner span 
+{
+	position: relative;
+    width: fit-content;
+}
+
+.title-box .inner:first-child span 
+{
+	animation: marquee-left 8s linear infinite;
+}
+
+.title-box .inner:last-child span 
+{
+	animation: marquee 8s linear infinite;
+}
+
+@keyframes marquee 
+{
+	from {
+		left: 100%;
+	}
+
+	to {
+        left: -300%;
+	}
+}
+
+@keyframes marquee-left 
+{
+    from {
+		left: 200%;
+	}
+
+	to {
+        left: -200%;
+	}
+}
+
+.banner-bottom
+{
+    background-color: var(--col-1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    height: 200px;
+    padding: 48px;
+    font-family: var(--font-3);
+
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+.banner-bottom.lower
+{
+    animation: lower-banner 1.2s ease-in .5s forwards;
+}
+
+.banner-bottom.lift
+{
+    animation: lift-banner 1.2s ease-in .5s forwards;
+}
+
+@keyframes lower-banner {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(100%); display: none; }
+}
+
+@keyframes lift-banner {
+    0% { transform: translateY(0); opacity: 1 }
+    100% { transform: translateY(-400%); opacity: 0; display: none; }
+}
+
+.banner-bottom h2
+{
+    font-size: 3rem;
+    color: var(--white);
+}
+
+.banner-bottom p
+{
+    font-size: 2rem;
+    color: var(--col-3);
+}
+
+.banner-bottom .loading-icon
+{
+    --grid-gap: 8px;
+    
+    position: absolute;
+    right: 32px;
+    
+    transform: translateY(2px);
+    flex-wrap: nowrap;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    width: 100px;
+    height: 100px;
+    gap: var(--grid-gap);
+
+    rotate: 45deg;
+}
+
+.loading-icon .loading-icon-s
+{
+    --delta: calc(100% + var(--grid-gap));
+    
+    background-color: var(--col-3);
+    z-index: 100;
+}
+
+.loading-icon.none
+{
+    display: none;
+}
+
+.loading-icon.done .loading-icon-s:nth-child(n),
+.banner-bottom.lower .loading-icon .loading-icon-s,
+.banner-bottom.lift .loading-icon .loading-icon-s
+{
+    animation: none;
+}
+
+.loading-icon .loading-icon-s:nth-child(1)
+{
+    z-index: 101;
+    background-color: var(--col-2);
+    animation: loading-icon-anim 2s infinite;
+}
+
+.loading-icon .loading-icon-s:nth-child(2)
+{
+    z-index: 102;
+    background-color: var(--col-3);
+    rotate: 90deg;
+    animation: loading-icon-anim 2s infinite;
+}
+
+.loading-icon .loading-icon-s:nth-child(3)
+{
+    z-index: 103;
+    background-color: var(--col-3);
+    rotate: 270deg;
+    animation: loading-icon-anim 2s infinite;
+}
+
+.loading-icon .loading-icon-s:nth-child(4)
+{
+    z-index: 104;
+    background-color: var(--col-2);
+    rotate: 180deg;
+    animation: loading-icon-anim 2s infinite;
+}
+
+@keyframes loading-icon-anim {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(var(--delta), 0); }
+    50% { transform: translate(var(--delta), var(--delta)); }
+    75% { transform: translate(0, var(--delta)); }
+}
+
+.banner-filler
+{
+    position: absolute;
+    width: 100%;
+    height: 100vh;
+    background-color: var(--col-1);
+    top: 100%;
+}

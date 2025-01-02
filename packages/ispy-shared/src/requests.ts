@@ -24,10 +24,6 @@ export type CreateGameRequest = z.infer<typeof CreateGameRequestModel>;
 
 // == Responses == //
 
-export type HttpResponse = {
-
-}
-
 // Error
 // ZodError | InvalidInputError
 // InvalidStateError

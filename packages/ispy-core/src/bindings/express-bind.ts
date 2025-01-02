@@ -9,6 +9,11 @@ import expressWs from "express-ws";
 //     'Access-Control-Allow-Credentials': true,
 // }
 
+// for each request handler:
+// 1. handle auth
+// 2. validate body
+// 3. handle body
+
 export function binding() {
     const port = 3000;
     const wsapp = expressWs(express());

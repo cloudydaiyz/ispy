@@ -94,6 +94,7 @@ export class ApiClient implements Partial<Requests.HttpRequests> {
             undefined,
             $onResponseError(),
         );
+
         this.ready = this.init();
     }
 

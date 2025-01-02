@@ -1,0 +1,132 @@
+.page 
+{
+    width: 100%;
+    height: 100%;
+}
+
+.home
+{
+    display: flex;
+    flex-direction: column;
+}
+
+.home-content
+{
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.app-status
+{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 1.2rem;
+    margin: 1rem;
+}
+
+.app-status span
+{
+    display: flex;
+}
+
+.options
+{
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.options > *
+{
+    color: var(--col-4);
+
+    font-family: var(--font-2);
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    font-weight: 100;
+
+    text-decoration: none;
+    background: none;
+    border: none;
+    text-align: center;
+    transition: scale .2s, text-shadow .2s, color .2s;
+}
+
+.options > *:hover
+{
+    --s: var(--col-4);
+
+    color: var(--select);
+    text-shadow:
+        -2px 1px 0px var(--s), 
+        -2px 2px 0px var(--s), 
+        -1px 2px 0px var(--s), 
+        1px 1px 6px var(--gray);
+    cursor: pointer;
+    user-select: none;
+    scale: 1.1;
+}
+
+.options > *:active
+{
+    color: var(--white);
+}
+
+.options > *:first-child
+{
+    font-size: clamp(2.2rem, 3.7vw, 3rem);
+}
+
+.options.enter > *:nth-child(1)
+{
+    animation: option-enter 2s linear both;
+}
+
+.options.enter > *:nth-child(2)
+{
+    animation: option-enter 2s linear .2s both;
+}
+
+.options.enter > *:nth-child(3)
+{
+    animation: option-enter 2s linear .4s both;
+}
+
+.options.enter > *:nth-child(4)
+{
+    animation: option-enter 2s linear .6s both;
+}
+
+@keyframes option-enter {
+    0% { scale: 0 }
+    80% { scale: 1.1 }
+    90% { scale: .9 }
+    95% { scale: 1.05 }
+    100% { scale: 1 }
+}
+
+.app-status
+{
+    white-space: nowrap;
+    pointer-events: none;
+    user-select: none;
+    font-size: clamp(1rem, 1.3vw, 1.5rem);
+}
+
+.game-status.on p:nth-child(2),
+.server-status.on p:nth-child(2)
+{
+    color: var(--success);
+}
+
+.game-status.off p:nth-child(2),
+.server-status.off p:nth-child(2)
+{
+    color: var(--gray);
+}

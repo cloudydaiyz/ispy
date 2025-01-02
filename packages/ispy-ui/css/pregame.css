@@ -1,0 +1,132 @@
+/* body
+{
+    background-color: var(--bg-2);
+} */
+
+.pregame.page
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.pregame-form
+{
+    max-width: 800px;
+    text-align: center;
+    font-family: var(--font-1);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    position: relative;
+    top: -48px;
+}
+
+.pregame-form > h2
+{
+    font-family: var(--font-2);
+    /* color: var(--col-1); */
+    color: var(--white);
+    font-size: 4rem;
+    font-weight: 700;
+    white-space: nowrap;
+
+    text-shadow:
+        -2px 1px 0px var(--col-4), 
+        -2px 2px 0px var(--col-4), 
+        -1px 2px 0px var(--col-4),
+        1px 1px 3px var(--gray);
+}
+
+.pregame-form > p
+{
+    font-weight: 400;
+    font-size: 1.8rem;
+    margin-bottom: 16px;
+    color: var(--black);
+}
+
+.pregame-tbl
+{
+    width: 100%;
+    border-spacing: 16px;
+}
+
+.pregame-tbl td:first-child
+{
+    font-size: 1.4rem;
+    font-weight: 700;
+    text-align: right;
+}
+
+.pregame-tbl label
+{
+    color: var(--black);
+}
+
+.pregame-tbl input[type=text]
+{
+    font-family: var(--font-1);
+    padding: 4px 8px;
+    background-color: var(--col-2);
+    border: 2px solid transparent;
+    border-radius: 4px;
+    width: 100%;
+    font-size: 1.4rem;
+    color: var(--black);
+}
+
+.pregame-tbl input[type=text]:hover
+{
+    border-bottom: 2px solid var(--select);
+}
+
+.pregame-tbl input[type=text]:focus
+{
+    outline: none;
+    border: 2px solid var(--select);
+}
+
+.pregame-form > button
+{
+    padding: 12px;
+    background-color: var(--btn);
+    color: var(--white);
+    border: 2px solid transparent;
+    border-radius: 4px;
+    font-family: var(--font-1);
+    font-size: 16px;
+    transition: background-color .1s;
+    font-size: 1.4rem;
+    margin-top: 16px;
+    margin-bottom: 16px;
+}
+
+.pregame-form > button:hover
+{
+    border: 2px solid var(--select);
+    cursor: pointer;
+}
+
+.pregame-form > button:active
+{
+    background-color: var(--select);
+}
+
+.pregame.page .error
+{
+    font-size: 1.2rem;
+    color: var(--error);
+    display: none;
+}
+
+.pregame.page .error.active
+{
+    display: block;
+}
