@@ -1,11 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Antonio:wght@100..700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Varela+Round&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Carter+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Antonio:wght@100..700&family=Cabin:ital,wght@0,400..700;1,400..700&display=swap');
 
 :root 
 {
-    --font-1: 'Varela Round', sans-serif;
+    --font-1: 'Nunito', sans-serif;
     --font-2: 'Carter One', arial, sans-serif;
     --font-3: 'Antonio', sans-serif;
 
@@ -20,6 +21,7 @@
 
     --bg: navajowhite;
     --bg-2: #f8fdf0;
+    --bg-3: #f8fdf0;
     --disabled: #888888;
     --btn: #fabb18;
     --select: #8c52ff;
@@ -47,7 +49,8 @@ body, main
     width: 100vw;
     height: 100vh;
     font-family: var(--font-1);
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: scroll;
 }
 
 body
@@ -70,14 +73,30 @@ body
     height: 100%;
     position: absolute;
     pointer-events: none;
+    top: 0;
 }
 
 .tooltip
 {
+    position: absolute;
+    overflow-x: hidden;
+    width: 100%;
+    height: 3rem;
     background-color: var(--btn);
     color: var(--white);
-    font-size: 1rem;
+    font-size: 1.2rem;
     padding: .5rem;
+    z-index: 200;
+    top: 0;
+
+    display: flex;
+    align-items: center;
+}
+
+.tooltip.bottom
+{
+    top: unset;
+    bottom: 0;
 }
 
 .tooltip p
@@ -231,6 +250,78 @@ h1, .title
     position: absolute;
     bottom: 0;
     width: 100%;
+    z-index: 200;
+}
+
+.banner-top
+{
+    background-color: var(--col-3);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    height: 100px;
+    padding: 48px;
+    font-family: var(--font-3);
+    color: var(--white);
+
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: 200;
+}
+
+.banner-top-navigation
+{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    pointer-events: all;
+    white-space: nowrap;
+}
+
+.banner-top-navigation button
+{
+    padding: 12px;
+    background-color: var(--btn);
+    color: var(--white);
+    border-radius: 4px;
+    font-family: var(--font-1);
+    font-size: 16px;
+    transition: background-color .1s;
+    font-size: 1.4rem;
+    margin-top: 16px;
+    margin-bottom: 16px;
+    min-width: 100px;
+
+    border: 2px solid var(--black);
+    box-shadow: -4px 4px 0px var(--black);
+    transition: all .2s;
+}
+
+.banner-top-navigation button:disabled
+{
+    translate: -4px 4px;
+    box-shadow: none;
+    background-color: var(--gray);
+    color: black;
+}
+
+.banner-top-navigation button:not(:disabled):hover
+{
+    border: 2px solid var(--select);
+    cursor: pointer;
+}
+
+.banner-top-navigation button:not(:disabled):active
+{
+    background-color: var(--select);
+    border: 2px solid var(--select);
+    translate: -2px 2px;
+    box-shadow: -2px 2px 0px var(--black);
 }
 
 .banner-bottom.lower
@@ -253,6 +344,7 @@ h1, .title
     100% { transform: translateY(-400%); opacity: 0; display: none; }
 }
 
+.banner-top h2,
 .banner-bottom h2
 {
     font-size: 3rem;

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../css/shared.css">
+    <link rel="stylesheet" href="../css/loading.css">
+    <link rel="stylesheet" href="../css/game-config.css">
+</head>
+<body>
+    <main>
+        <div class="shared-context">
+            <div class="banner-top">
+                <div class="banner-top-navigation">
+                    <button class="exit">EXIT</button>
+                    <h2>TASKS</h2>
+                    <button class="tasks">CONFIG</button>
+                </div>
+            </div>
+        </div>
+        <div class="game-config tasks page">
+            <div class="game-config-content">
+                <div class="task-definition">
+                    <h2>Task 1</h2>
+                    <button class="delete-task">DELETE TASK</button>
+                    <form>
+                        <table class="game-config-options">
+                            <tr>
+                                <th scope="row">
+                                    <label for="title">Title</label>
+                                </th>
+                                <td>
+                                    <input type="text" name="title" id="title" placeholder="Sample Game">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    <label for="prompt">Prompt</label>
+                                </th>
+                                <td>
+                                    <textarea name="prompt" id="prompt" cols="30" rows="10"></textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    <label for="response-type">Type</label>
+                                </th>
+                                <td>
+                                    <select name="response-type" id="response-type">
+                                        <option value="no-response">No Response</option>
+                                        <option value="single-select">Single Select</option>
+                                        <option value="multi-select">Multi Select</option>
+                                        <option value="multi-choice">Multiple Choice</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    <label for="title">Responses</label>
+                                </th>
+                                <td class="responses">
+                                    <div class="response">
+                                        <input type="checkbox" name="cont-on-comp" id="cont-on-comp" class="correct">
+                                        <input type="text" name="title" id="title" placeholder="Sample Response" class="content">
+                                        <button class="delete-response">-</button>
+                                    </div>
+                                    <div class="response">
+                                        <input type="checkbox" name="cont-on-comp" id="cont-on-comp" class="correct">
+                                        <input type="text" name="title" id="title" placeholder="Sample Response" class="content">
+                                        <button class="delete-response">-</button>
+                                    </div>
+                                    <div class="response">
+                                        <input type="checkbox" name="cont-on-comp" id="cont-on-comp" class="correct">
+                                        <input type="text" name="title" id="title" placeholder="Sample Response" class="content">
+                                        <button class="delete-response">-</button>
+                                    </div>
+                                    <button class="add-response">ADD RESPONSE</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    <label for="max-attempts">Max Attempts</label>
+                                </th>
+                                <td>
+                                    <input type="number" name="max-attempts" id="max-attempts" min="1" max="4" step="1">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    <label for="required">Required?</label>
+                                </th>
+                                <td>
+                                    <input type="checkbox" name="required" id="required">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    <label for="success-value">Success Value</label>
+                                </th>
+                                <td>
+                                    <input type="number" name="success-value" id="success-value" min="1" max="4" step="1">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    <label for="scale-success-value">Scale Success Value?</label>
+                                </th>
+                                <td>
+                                    <input type="checkbox" name="scale-success-value" id="scale-success-value">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    <label for="fail-value">Fail Value</label>
+                                </th>
+                                <td>
+                                    <input type="number" name="fail-value" id="fail-value" min="1" max="4" step="1">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    <label for="scale-fail-value">Scale Fail Value?</label>
+                                </th>
+                                <td>
+                                    <input type="checkbox" name="scale-fail-value" id="scale-fail-value">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    <label for="success-msg">Success Message</label>
+                                </th>
+                                <td>
+                                    <div class="completion-msg">
+                                        <input type="checkbox" name="has-success-message" id="has-success-message">
+                                        <textarea name="success-msg" id="success-msg" cols="30" rows="5"></textarea>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    <label for="fail-msg">Fail Message</label>
+                                </th>
+                                <td>
+                                    <div class="completion-msg">
+                                        <input type="checkbox" name="has-fail-message" id="has-fail-message">
+                                        <textarea name="fail-msg" id="fail-msg" cols="30" rows="5"></textarea>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+                <div class="task-definition">
+                    <h2>Task 1</h2>
+                    <button class="delete-task">DELETE TASK</button>
+                    <form>
+                        <table class="game-config-options">
+                            <tr>
+                                <th scope="row">
+                                    <label for="title">Title</label>
+                                </th>
+                                <td>
+                                    <input type="text" name="title" id="title" placeholder="Sample Game">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    <label for="prompt">Prompt</label>
+                                </th>
+                                <td>
+                                    <textarea name="prompt" id="prompt" cols="30" rows="10"></textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    <label for="response-type">Type</label>
+                                </th>
+                                <td>
+                                    <select name="response-type" id="response-type">
+                                        <option value="no-response">No Response</option>
+                                        <option value="single-select">Single Select</option>
+                                        <option value="multi-select">Multi Select</option>
+                                        <option value="multi-choice">Multiple Choice</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    <label for="title">Responses</label>
+                                </th>
+                                <td class="responses">
+                                    <div class="response">
+                                        <input type="checkbox" name="cont-on-comp" id="cont-on-comp" class="correct">
+                                        <input type="text" name="title" id="title" placeholder="Sample Response" class="content">
+                                        <button class="delete-response">-</button>
+                                    </div>
+                                    <div class="response">
+                                        <input type="checkbox" name="cont-on-comp" id="cont-on-comp" class="correct">
+                                        <input type="text" name="title" id="title" placeholder="Sample Response" class="content">
+                                        <button class="delete-response">-</button>
+                                    </div>
+                                    <div class="response">
+                                        <input type="checkbox" name="cont-on-comp" id="cont-on-comp" class="correct">
+                                        <input type="text" name="title" id="title" placeholder="Sample Response" class="content">
+                                        <button class="delete-response">-</button>
+                                    </div>
+                                    <button class="add-response">ADD RESPONSE</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    <label for="max-attempts">Max Attempts</label>
+                                </th>
+                                <td>
+                                    <input type="number" name="max-attempts" id="max-attempts" min="1" max="4" step="1">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    <label for="required">Required?</label>
+                                </th>
+                                <td>
+                                    <input type="checkbox" name="required" id="required">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    <label for="success-value">Success Value</label>
+                                </th>
+                                <td>
+                                    <input type="number" name="success-value" id="success-value" min="1" max="4" step="1">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    <label for="scale-success-value">Scale Success Value?</label>
+                                </th>
+                                <td>
+                                    <input type="checkbox" name="scale-success-value" id="scale-success-value">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    <label for="fail-value">Fail Value</label>
+                                </th>
+                                <td>
+                                    <input type="number" name="fail-value" id="fail-value" min="1" max="4" step="1">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    <label for="scale-fail-value">Scale Fail Value?</label>
+                                </th>
+                                <td>
+                                    <input type="checkbox" name="scale-fail-value" id="scale-fail-value">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    <label for="success-msg">Success Message</label>
+                                </th>
+                                <td>
+                                    <textarea name="success-msg" id="success-msg" cols="30" rows="5"></textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    <label for="fail-msg">Fail Message</label>
+                                </th>
+                                <td>
+                                    <textarea name="fail-msg" id="fail-msg" cols="30" rows="5"></textarea>
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+                <button class="add-task">ADD TASK</button>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

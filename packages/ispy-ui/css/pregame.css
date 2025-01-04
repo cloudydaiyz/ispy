@@ -31,7 +31,6 @@
 .pregame-form > h2
 {
     font-family: var(--font-2);
-    /* color: var(--col-1); */
     color: var(--white);
     font-size: 4rem;
     font-weight: 700;
@@ -58,7 +57,7 @@
     border-spacing: 16px;
 }
 
-.pregame-tbl td:first-child
+.pregame-tbl th
 {
     font-size: 1.4rem;
     font-weight: 700;
@@ -98,7 +97,7 @@
     padding: 12px;
     background-color: var(--btn);
     color: var(--white);
-    border: 2px solid transparent;
+    border: 2px solid var(--black);
     border-radius: 4px;
     font-family: var(--font-1);
     font-size: 16px;

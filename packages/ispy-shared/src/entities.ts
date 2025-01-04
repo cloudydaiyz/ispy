@@ -134,7 +134,7 @@ export const GameConfigurationModel = z.object({
     // the number of users who must complete all required tasks before the game is considered complete
     // integer, [0, maxPlayers]
     // cannot equal 0 if `continueOnCompletion` is true
-    minPlayersToComplete: z.number(),
+    minPlayersToComplete: z.number().int().refine(n => 0 <= n),
 
 	// true if the game should continue even if it's completed
     continueOnCompletion: z.boolean(),
@@ -153,16 +153,13 @@ export const GameConfigurationModel = z.object({
     // host can always manually end the game even if the time limit isn't reached
     endDate: z.date(),
 
-	// default: false
-    lockedOnCreate: z.boolean(),
-
     // default: false
-    // can be reconfigured during the game
     lockedWhileRunning: z.boolean(),
 }).refine(o => {
     const timeDelta = o.endDate.getTime() - o.startDate.getTime();
     return (
         (!o.continueOnCompletion || o.minPlayersToComplete !== 0) 
+        && o.minPlayersToComplete <= o.maxPlayers
         && o.minPlayers <= o.maxPlayers
         && 60000 <= timeDelta && timeDelta <= 86400000
     );

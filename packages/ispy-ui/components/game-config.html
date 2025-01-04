@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../css/shared.css">
+    <link rel="stylesheet" href="../css/loading.css">
+    <link rel="stylesheet" href="../css/game-config.css">
+</head>
+<body>
+    <main>
+        <div class="shared-context">
+            <div class="banner-top">
+                <div class="banner-top-navigation">
+                    <button class="exit">EXIT</button>
+                    <h2>GAME CONFIGURATION</h2>
+                    <button class="tasks">TASKS</button>
+                </div>
+            </div>
+        </div>
+        <div class="game-config page">
+            <div class="game-config-content">
+                <form>
+                    <table class="game-config-options">
+                        <tr>
+                            <th scope="row">
+                                <label for="title">Title</label>
+                            </th>
+                            <td>
+                                <input type="text" name="title" id="title" placeholder="Sample Game">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">
+                                <label for="min-players">Minimum Player Count</label>
+                            </th>
+                            <td>
+                                <input type="number" name="min-players" id="min-players" min="0" max="100">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">
+                                <label for="max-players">Maximum Player Count</label>
+                            </th>
+                            <td>
+                                <input type="number" name="max-players" id="max-players" min="0" max="100">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">
+                                <label for="min-winners">Minimum Winner Count</label>
+                            </th>
+                            <td>
+                                <input type="number" name="min-winners" id="min-winners" min="0" max="100">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">
+                                <label for="cont-on-comp">Continue on Completion?</label>
+                            </th>
+                            <td>
+                                <input type="checkbox" name="cont-on-comp" id="cont-on-comp">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">
+                                <label for="start-time">Start Time</label>
+                            </th>
+                            <td>
+                                <input type="datetime-local" name="start-time" id="start-time">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">
+                                <label for="end-time">End Time</label>
+                            </th>
+                            <td>
+                                <input type="datetime-local" name="end-time" id="end-time">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">
+                                <label for="create-locked">Locked on Create?</label>
+                            </th>
+                            <td>
+                                <input type="checkbox" name="create-locked" id="create-locked">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">
+                                <label for="running-locked">Locked While Running?</label>
+                            </th>
+                            <td>
+                                <input type="checkbox" name="running-locked" id="running-locked">
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+                <div class="game-config-actions">
+                    <button class="import">IMPORT</button>
+                    <button class="export">EXPORT</button>
+                    <button class="create">CREATE</button>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
