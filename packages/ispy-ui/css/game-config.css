@@ -211,6 +211,12 @@ body
     text-align: center;
     font-family: var(--font-2);
     font-size: 2rem;
+    color: var(--white);
+    text-shadow:
+        -2px 1px 0px var(--col-4), 
+        -2px 2px 0px var(--col-4), 
+        -1px 2px 0px var(--col-4), 
+        1px 1px 6px var(--gray);
 }
 
 .game-config-content .add-task

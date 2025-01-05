@@ -110,6 +110,9 @@ body
     padding: 1rem 3rem;
     margin-bottom: 4rem;
     flex-grow: 1;
+
+    display: flex;
+    flex-direction: column;
 }
 
 .current-action .task,
@@ -121,7 +124,11 @@ body
 
 .current-action.no-task .no-task
 {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: center;
+    align-items: center;
 }
 
 .current-action.waiting .waiting,
@@ -130,6 +137,62 @@ body
 .current-action.completed .completed
 {
     display: block;
+}
+
+.current-action.waiting p.waiting,
+.current-action.started p.started,
+.current-action.completed-required p.completed-required,
+.current-action.completed p.completed
+{
+    font-family: var(--font-2);
+    font-size: 2rem;
+    color: var(--white);
+    text-shadow:
+        -2px 1px 0px var(--col-4), 
+        -2px 2px 0px var(--col-4), 
+        -1px 2px 0px var(--col-4), 
+        1px 1px 6px var(--gray);
+}
+
+.current-action.started .task-search,
+.current-action.completed-required .task-search
+{
+    width: 50%;
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    align-items: center;
+}
+
+.current-action .task-search-query
+{
+    font-family: var(--font-1);
+    font-weight: 300;
+    font-size: 1.4rem;
+    height: fit-content;
+    padding: 4px 8px;
+    background-color: var(--col-2);
+    border: 2px solid transparent;
+    border-radius: 4px;
+    flex-grow: 1;
+    color: var(--black);
+    resize: none;
+}
+
+.current-action .task-search-query:hover
+{
+    border-bottom: 2px solid var(--select);
+}
+
+.current-action .task-search-query:focus
+{
+    outline: none;
+    border: 2px solid var(--select);
+}
+
+.current-action .task-search-query:invalid
+{
+    border: 2px solid var(--error);
 }
 
 .current-action.task
@@ -161,7 +224,19 @@ body
     text-align: right;
 }
 
-.current-action .task .task-prompt
+.current-action .task .success-message,
+.current-action.success .task .task-prompt,
+.current-action.success .task .user-response,
+.current-action .task .fail-message,
+.current-action.fail .task .task-prompt,
+.current-action.fail .task .user-response
+{
+    display: none;
+}
+
+.current-action .task .task-prompt,
+.current-action.success .task .success-message,
+.current-action.fail .task .fail-message
 {
     flex-grow: 1;
     align-self: center;
@@ -216,6 +291,7 @@ body
     width: 100%;
     position: relative;
     z-index: 2;
+    font-size: 1.2rem;
 }
 
 .task .user-response

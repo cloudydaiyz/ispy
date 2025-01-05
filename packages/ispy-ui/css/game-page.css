@@ -4,7 +4,8 @@ body
 }
 
 .game.page button,
-.task .user-response > input[type=submit]
+.task .user-response > input[type=submit],
+.current-action .task-search-submit
 {
     padding: 12px;
     background-color: var(--btn);
@@ -23,7 +24,8 @@ body
 }
 
 .game.page button:disabled,
-.task .user-response > input[type=submit]:disabled
+.task .user-response > input[type=submit]:disabled,
+.current-action .task-search-submit:disabled
 {
     translate: -4px 4px;
     box-shadow: none;
@@ -32,14 +34,16 @@ body
 }
 
 .game.page button:hover,
-.task .user-response > input[type=submit]:hover
+.task .user-response > input[type=submit]:hover,
+.current-action .task-search-submit:hover
 {
     border: 2px solid var(--select);
     cursor: pointer;
 }
 
 .game.page button:active,
-.task .user-response > input[type=submit]:active
+.task .user-response > input[type=submit]:active,
+.current-action .task-search-submit:active
 {
     border: 2px solid var(--select);
     background-color: var(--select);

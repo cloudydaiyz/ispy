@@ -210,6 +210,7 @@ export const AdminModel = z.object({
 
 export const TaskSubmissionModel = z.object({
     taskId: z.string(),
+    title: z.string(),
     submitTime: z.date(),
     responseId: z.string(),
     responseContent: z.string(),
