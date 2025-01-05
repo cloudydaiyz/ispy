@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="../css/shared.css">
-    <link rel="stylesheet" href="../css/game-host.css">
+    <link rel="stylesheet" href="../css/game-page.css">
+    <link rel="stylesheet" href="../css/game-player.css">
 </head>
 <body>
     <main>
@@ -21,28 +22,33 @@
                 <div class="title">
                     <h1>ispy</h1>
                 </div>
-                <button class="user-info">
-                    <div class="p">user1</div>
-                </button>
+                <button class="to-user-info">user1</button>
             </div>
             <div class="game-status">
-                <button class="end-game">END</button>
-                <div class="time-left">
+                <button class="leave-game">LEAVE GAME</button>
+                <div class="game-stat time-left">
                     <h3>Time Left</h3>
                     <p>8:00</p>
                 </div>
-                <div class="user-points">
-                    <h3>Time Left</h3>
-                    <p>8:00</p>
+                <div class="game-stat user-points">
+                    <h3>Points</h3>
+                    <p>846</p>
                 </div>
-                <div class="user-rank">
-                    <h3>Time Left</h3>
-                    <p>8:00</p>
+                <div class="game-stat user-rank">
+                    <h3>Rank</h3>
+                    <p>1st</p>
                 </div>
             </div>
-            <div class="current-action">
+            <div class="current-action task waiting">
                 <div class="no-task">
-                    <p>Waiting for the game to start</p>
+                    <p class="waiting">Waiting for the game to start</p>
+                    <p class="started">The game has started! Enter a task ID.</p>
+                    <p class="completed-required">You have completed all required tasks! Enter a task ID if you want to continue for more points.</p>
+                    <p class="completed">You have completed all tasks!</p>
+                    <form action="" class="started completed-required completed">
+                        <input type="text" name="task-id" id="task-id">
+                        <input type="submit" value="FIND TASK">
+                    </form>
                 </div>
                 <div class="task">
                     <div class="task-info">
@@ -56,24 +62,30 @@
                             <p>800 points on fail</p>
                         </div>
                     </div>
-                    <p class="task-prompt">Blah blah</p>
-                    <form class="responses">
-                        <input type="checkbox" name="answer-1" id="answer-1">
-                        <input type="checkbox" name="answer-2" id="answer-2">
-                        <input type="checkbox" name="answer-3" id="answer-3">
-                        <input type="checkbox" name="answer-4" id="answer-4">
+                    <p class="task-prompt">Lorem ipsum dolor sit amet consectetur adipisicing elit. Incidunt enim aut fuga? Minus, voluptatibus earum. Repellendus ullam nulla, sapiente exercitationem quis et aliquid in quidem officiis sequi ipsa, optio corrupti doloribus vitae aperiam necessitatibus, soluta tempore? Perferendis assumenda, necessitatibus veritatis itaque aperiam aut, porro molestias distinctio maxime eligendi, iste voluptatibus odio reprehenderit. Dicta doloremque voluptatum exercitationem, voluptatem corrupti recusandae voluptas? Consequatur necessitatibus quaerat, commodi itaque ut vel quibusdam repudiandae aliquid voluptate officia veniam dolorem praesentium laborum odit cumque corrupti iure sit, a ratione assumenda possimus eveniet magni nam eaque. Consequuntur, ipsam beatae eveniet debitis vel quasi quo minima! Deserunt, expedita.</p>
+                    <form class="user-response">
+                        <div class="task-responses">
+                            <div class="answer">
+                                <input type="checkbox" name="answer-1" id="answer-1">
+                                <label for="answer-1">Answer 1 knjdnsclanjdwnbsjknwilndjksbweidjknslbhidnfelfhubiwj danksfjlhulbf nasldjisuhfiebfsklndjzshuweabskdjnuheifsdjnruhefwadisnjhuinj</label>
+                            </div>
+                            <div class="answer">
+                                <input type="checkbox" name="answer-2" id="answer-2">
+                                <label for="answer-2">Answer 2</label>
+                            </div>
+                            <div class="answer">
+                                <input type="checkbox" name="answer-3" id="answer-3">
+                                <label for="answer-3">Answer 3</label>
+                            </div>
+                            <div class="answer">
+                                <input type="checkbox" name="answer-4" id="answer-4">
+                                <label for="answer-4">Answer 4</label>
+                            </div>
+                        </div>
                         <input type="submit" value="SUBMIT">
                     </div>
                 </div>
             </div>
-            <!-- <div class="game-header player">
-                <div class="title">
-                    <h1>ispy</h1>
-                </div>
-                <div class="user">
-                    <div class="go-user-profile">user1</div>
-                </div>
-            </div> -->
         </div>
     </main>
 </body>

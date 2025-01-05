@@ -1,0 +1,231 @@
+body
+{
+    background-color: var(--col-1);
+}
+
+.game.player.page
+{
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.game.player.page .game-header
+{
+    height: 4rem;
+    padding: 1rem 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--white);
+
+    font-family: var(--font-3);
+    font-size: 1.5rem;
+}
+
+.game.player.page .game-header .title
+{
+    margin: 0;
+    padding: 0;
+}
+
+.game.player.page .game-header .title h1
+{
+    font-size: 2rem;
+    margin-bottom: 0;
+    color: var(--btn);
+    text-shadow:
+        -2px 1px 0px var(--black), 
+        -2px 2px 0px var(--black), 
+        -1px 2px 0px var(--black);
+}
+
+.game.player.page .game-header .to-user-info
+{
+    font-family: var(--font-2);
+    font-size: 1.5rem;
+    background: none;
+    border: none;
+    box-shadow: none;
+    color: var(--black);
+    transition: scale .2s, text-shadow .2s, color .2s;
+}
+
+.game.player.page .game-header .to-user-info:hover
+{
+    --s: var(--col-4);
+
+    color: var(--select);
+    text-shadow:
+        -2px 1px 0px var(--s), 
+        -2px 2px 0px var(--s), 
+        -1px 2px 0px var(--s), 
+        1px 1px 3px var(--gray);
+    cursor: pointer;
+    user-select: none;
+    scale: 1.2;
+}
+
+.game.player.page .game-header .to-user-info:active
+{
+    color: var(--btn);
+    translate: 0;
+}
+
+.game.player.page .game-status
+{
+    padding: 1rem 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.game.player.page .game-status .leave-game
+{
+    margin: 0;
+}
+
+.game.player.page .game-status h3
+{
+    font-family: var(--font-1);
+    font-size: 1.5rem;
+    color: var(--black);
+    text-align: center;
+}
+
+.game.player.page .game-status p
+{
+    font-family: var(--font-1);
+    font-size: 1.2rem;
+    background-color: var(--white);
+    color: var(--black);
+    padding: 4px 3rem;
+    min-width: 12rem;
+    text-align: center;
+    border-radius: 4px;
+}
+
+.current-action
+{
+    padding: 1rem 3rem;
+    margin-bottom: 4rem;
+    flex-grow: 1;
+}
+
+.current-action .task,
+.current-action .no-task,
+.current-action .no-task > *
+{
+    display: none;
+}
+
+.current-action.no-task .no-task
+{
+    display: block;
+}
+
+.current-action.waiting .waiting,
+.current-action.started .started,
+.current-action.completed-required .completed-required,
+.current-action.completed .completed
+{
+    display: block;
+}
+
+.current-action.task
+{
+    background-color: var(--col-2);
+}
+
+.current-action.task .task
+{
+    display: flex;
+    flex-direction: column;
+    height: 60vh;
+}
+
+.current-action .task .task-info
+{
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.2rem;
+}
+
+.current-action .task .task-info .task-desc
+{
+    text-align: left;
+}
+
+.current-action .task .task-info .task-type
+{
+    text-align: right;
+}
+
+.current-action .task .task-prompt
+{
+    flex-grow: 1;
+    align-self: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin: 8px 0px;
+    text-align: center;
+}
+
+.current-action .task-responses
+{
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 8px 64px;
+}
+
+.current-action .task-responses .answer
+{
+    background-color: transparent;
+    padding: 8px 16px;
+    position: relative;
+}
+
+.current-action .task-responses .answer input
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    appearance: none;
+
+    background-color: var(--btn);
+    border: 2px solid black;
+    border-radius: 4px;
+    z-index: 1;
+    transition: background-color .2s;
+}
+
+.current-action .task-responses .answer input:checked
+{
+    background-color: var(--select);
+    box-shadow: 0px 0px 4px var(--gray);
+}
+
+.current-action .task-responses .answer label
+{
+    width: 100%;
+    position: relative;
+    z-index: 2;
+}
+
+.task .user-response
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.task .user-response > input[type=submit]
+{
+    padding: 8px 12px;
+}

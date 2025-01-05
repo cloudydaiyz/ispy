@@ -1,49 +1,3 @@
-body
-{
-    background-color: var(--col-1);
-}
-
-.game.page button
-{
-    padding: 12px;
-    background-color: var(--btn);
-    color: var(--white);
-    border: 2px solid var(--black);
-    box-shadow: -4px 4px 0px var(--black);
-    /* border: 2px solid rgb(from var(--btn) calc(r - 30) calc(g - 30) calc(b - 30)); */
-    border-radius: 4px;
-    font-family: var(--font-1);
-    font-size: 16px;
-    transition: background-color .1s;
-    font-size: 1.4rem;
-    margin-top: 16px;
-    margin-bottom: 16px;
-    height: fit-content;
-    transition: all .2s;
-}
-
-.game.page button:disabled
-{
-    translate: -4px 4px;
-    box-shadow: none;
-    background-color: var(--gray);
-    color: black;
-}
-
-.game.page button:hover
-{
-    border: 2px solid var(--select);
-    cursor: pointer;
-}
-
-.game.page button:active
-{
-    border: 2px solid var(--select);
-    background-color: var(--select);
-    translate: -2px 2px;
-    box-shadow: -2px 2px 0px var(--black);
-}
-
 .game.host.page .game-header
 {
     height: 4rem;
@@ -97,7 +51,7 @@ body
 
 .game-info > *
 {
-    width: 12rem;
+    min-width: 12rem;
     text-align: center;
 }
 

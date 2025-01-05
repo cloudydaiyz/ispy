@@ -100,7 +100,7 @@ export class ApiClient implements Partial<Requests.HttpRequests> {
 
     private async init(): Promise<void> {
         // Test the ping operation to make sure the config is valid
-        this.ping().catch(e => {
+        return this.ping().catch(e => {
             console.log("ApiClient: Error encountered during setup ping. Please check "
                 + "your configuration input and ensure its validity.");
             console.log(e);

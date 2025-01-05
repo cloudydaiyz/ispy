@@ -1,0 +1,48 @@
+body
+{
+    background-color: var(--col-1);
+}
+
+.game.page button,
+.task .user-response > input[type=submit]
+{
+    padding: 12px;
+    background-color: var(--btn);
+    color: var(--white);
+    border: 2px solid var(--black);
+    box-shadow: -4px 4px 0px var(--black);
+    border-radius: 4px;
+    font-family: var(--font-1);
+    font-size: 16px;
+    transition: background-color .1s;
+    font-size: 1.4rem;
+    margin-top: 16px;
+    margin-bottom: 16px;
+    height: fit-content;
+    transition: all .2s;
+}
+
+.game.page button:disabled,
+.task .user-response > input[type=submit]:disabled
+{
+    translate: -4px 4px;
+    box-shadow: none;
+    background-color: var(--gray);
+    color: black;
+}
+
+.game.page button:hover,
+.task .user-response > input[type=submit]:hover
+{
+    border: 2px solid var(--select);
+    cursor: pointer;
+}
+
+.game.page button:active,
+.task .user-response > input[type=submit]:active
+{
+    border: 2px solid var(--select);
+    background-color: var(--select);
+    translate: -2px 2px;
+    box-shadow: -2px 2px 0px var(--black);
+}
