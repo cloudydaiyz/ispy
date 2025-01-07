@@ -1,0 +1,86 @@
+.game.history.page
+{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: calc(100% - 100px);
+    overflow-y: scroll;
+
+    position: relative;
+    top: 100px;
+}
+
+.game-history-list
+{
+    width: fit-content;
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+    border-spacing: 4rem 8px;
+    border-radius: 8px;
+    background-color: var(--col-2);
+}
+
+.game-history-list tr:first-child
+{
+    font-size: 1.4rem;
+    font-family: var(--font-2);
+    color: var(--white);
+    text-shadow:
+        -2px 1px 0px var(--col-4), 
+        -2px 2px 0px var(--col-4), 
+        -1px 2px 0px var(--col-4),
+        1px 1px 3px var(--gray);
+}
+
+.game-history-list tr:nth-child(n+2)
+{
+    font-size: 1.4rem;
+    font-family: var(--font-2);
+    color: var(--col-4);
+    /* text-shadow:
+        -2px 1px 0px var(--col-4), 
+        -2px 2px 0px var(--col-4), 
+        -1px 2px 0px var(--col-4),
+        1px 1px 3px var(--gray); */
+}
+
+.game.history.page .game-history-list button
+{
+    color: var(--btn);
+
+    font-family: var(--font-2);
+    font-size: 1.4rem;
+    font-weight: 100;
+    margin: 0px;
+    padding: 0px;
+
+    text-decoration: none;
+    background: none;
+    border: none;
+    text-align: center;
+    transition: scale .2s, text-shadow .2s, color .2s;
+
+    text-shadow:
+        -2px 1px 0px var(--col-4), 
+        -2px 2px 0px var(--col-4), 
+        -1px 2px 0px var(--col-4),
+        1px 1px 3px var(--gray);
+    box-shadow: none;
+}
+
+.game.history.page .game-history-list button:hover
+{
+    color: var(--select);
+    cursor: pointer;
+    user-select: none;
+    scale: 1.1;
+}
+
+.game.history.page .game-history-list button:active
+{
+    color: var(--white);
+    translate: none;
+}

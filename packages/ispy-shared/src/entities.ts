@@ -222,6 +222,7 @@ export const PlayerModel = z.object({
     username: z.string(),
     points: z.number(),
     ranking: z.number(),
+    completed: z.boolean(),
     pointsForNextRank: z.number(),
 });
 

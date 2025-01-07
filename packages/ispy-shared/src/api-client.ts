@@ -3,11 +3,13 @@
 import * as Requests from "./requests";
 import * as Api from "./entities";
 import axios, { AxiosError, AxiosInstance, CreateAxiosDefaults, InternalAxiosRequestConfig } from "axios";
+import { delay } from "./helper";
+import { INITIAL_REQUEST_ERR_DELAY } from "./constants";
 const Paths = Requests.Paths;
 
 interface ApiClientConfig extends CreateAxiosDefaults {}
 
-export class ApiClient implements Partial<Requests.HttpRequests> {
+export class ApiClient implements Requests.HttpRequests {
     axios: AxiosInstance;
     ready: Promise<void>;
     accessToken?: string;
@@ -73,12 +75,18 @@ export class ApiClient implements Partial<Requests.HttpRequests> {
             return async function (e: any) {
                 // Request was made but no response received
                 // OR response returned with error
-                console.log('Error during response handling');
+                console.error('Error during response handling. Retrying...');
 
                 const error = e as AxiosError;
                 if(error.response?.status == 401 && !authRetry) {
                     authRetry = true;
-                    await refresh();
+                    try {
+                        await delay(INITIAL_REQUEST_ERR_DELAY);
+                        await refresh();
+                        return;
+                    } catch {
+                        console.error('Retry failed.');
+                    }
                 }
                 authRetry = false;
                 return Promise.reject(error);
@@ -162,7 +170,7 @@ export class ApiClient implements Partial<Requests.HttpRequests> {
     lockGame = async () => { await this.axios.post(Paths.lockGame, undefined, this.useAuth()) };
     unlockGame = async () => { await this.axios.post(Paths.unlockGame, undefined, this.useAuth()) };
     viewTaskHostInfo = (request: Api.TaskId) => this.axios.post(Paths.viewTaskHostInfo, request, this.useAuth()).then(r => r.data);
-    viewTaskGameInfo = () => this.axios.post(Paths.viewGameHostInfo, undefined, this.useAuth()).then(r => r.data);
+    viewGameHostInfo = () => this.axios.post(Paths.viewGameHostInfo, undefined, this.useAuth()).then(r => r.data);
 
     removeAdmin = async (request: Api.Username) => { await this.axios.post(Paths.removeAdmin, request, this.useAuth()) };
 }

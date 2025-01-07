@@ -1,0 +1,124 @@
+.game.results.page
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    overflow-y: scroll;
+
+    position: relative;
+    top: 100px;
+    padding-top: 5rem;
+}
+
+.game.results.page h2
+{
+    width: 100%;
+    display: flex;
+    font-family: var(--font-2);
+    font-size: 2rem;
+
+    color: var(--white);
+    font-weight: 700;
+    white-space: nowrap;
+
+    text-shadow:
+        -2px 1px 0px var(--col-4), 
+        -2px 2px 0px var(--col-4), 
+        -1px 2px 0px var(--col-4),
+        1px 1px 3px var(--gray);
+}
+
+.game-final-info
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--col-4);
+    font-size: 1.2rem;
+    margin-bottom: 32px;
+}
+
+.game.results.page .leaderboard-label
+{
+    width: fit-content;
+    margin-bottom: 4px;
+}
+
+.player-list
+{
+    width: fit-content;
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+    border-spacing: 4rem 8px;
+    border-radius: 8px;
+    background-color: var(--col-2);
+}
+
+.player-list > *
+{
+    text-align: left;
+}
+
+.game.page .player-list button
+{
+    color: var(--col-4);
+
+    font-family: var(--font-2);
+    font-size: 1.4rem;
+    font-weight: 100;
+    margin: 0px;
+    padding: 0px;
+
+    text-decoration: none;
+    background: none;
+    border: none;
+    text-align: center;
+    transition: scale .2s, text-shadow .2s, color .2s;
+    box-shadow: none;
+}
+
+.game.page .player-list button:hover
+{
+    --s: var(--col-4);
+
+    color: var(--select);
+    text-shadow:
+        -2px 1px 0px var(--s), 
+        -2px 2px 0px var(--s), 
+        -1px 2px 0px var(--s), 
+        1px 1px 6px var(--gray);
+    cursor: pointer;
+    user-select: none;
+    scale: 1.1;
+}
+
+.game.page .player-list button:active
+{
+    color: var(--white);
+    translate: none;
+}
+
+.game.page .player-list button:hover
+{
+    color: var(--select);
+}
+
+.game.page .player-list button:active
+{
+    color: var(--white);
+}
+
+.player-list.leaderboard p
+{
+    font-size: 1.4rem;
+    font-family: var(--font-2);
+    color: var(--white);
+    text-shadow:
+        -2px 1px 0px var(--col-4), 
+        -2px 2px 0px var(--col-4), 
+        -1px 2px 0px var(--col-4),
+        1px 1px 3px var(--gray);
+}

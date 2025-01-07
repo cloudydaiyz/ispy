@@ -1,5 +1,5 @@
 {
-  "name": "ispy-ui",
+  "name": "@cloudydaiyz/ispy-ui",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@cloudydaiyz/ispy-shared": "file:../ispy-shared",
     "vite": "^5.4.1"
   }
 }

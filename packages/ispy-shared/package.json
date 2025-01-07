@@ -1,5 +1,5 @@
 {
-  "name": "ispy-shared",
+  "name": "@cloudydaiyz/ispy-shared",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {

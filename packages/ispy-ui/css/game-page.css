@@ -3,6 +3,34 @@ body
     background-color: var(--col-1);
 }
 
+.game-main
+{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 16px;
+    margin-bottom: 16px;
+    padding: 0px 64px;
+}
+
+.game-main .title
+{
+    height: fit-content;
+    margin: 0;
+    padding: 0;
+}
+
+.game-main .title h1
+{
+    font-size: 6rem;
+}
+
+.game-main button
+{
+    width: 8rem;
+}
+
 .game.page button,
 .task .user-response > input[type=submit],
 .current-action .task-search-submit
