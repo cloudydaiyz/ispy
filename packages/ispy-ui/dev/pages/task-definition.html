@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, interactive-widget=resizes-content">
     <title>Document</title>
     <link rel="stylesheet" href="/css/shared.css">
     <link rel="stylesheet" href="/css/loading.css">
@@ -24,30 +25,30 @@
                 <div class="task-definition">
                     <h2>Task 1</h2>
                     <button class="delete-task">DELETE TASK</button>
-                    <form>
+                    <form id="tasks[0]">
                         <table class="game-config-options">
                             <tr>
                                 <th scope="row">
-                                    <label for="title">Title</label>
+                                    <label for="tasks[0].title">Title</label>
                                 </th>
                                 <td>
-                                    <input type="text" name="title" id="title" placeholder="Sample Game">
+                                    <input type="text" name="title" id="tasks[0].title" placeholder="Sample Game">
                                 </td>
                             </tr>
                             <tr>
                                 <th scope="row">
-                                    <label for="prompt">Prompt</label>
+                                    <label for="tasks[0].prompt">Prompt</label>
                                 </th>
                                 <td>
-                                    <textarea name="prompt" id="prompt" cols="30" rows="10"></textarea>
+                                    <textarea name="prompt" id="tasks[0].prompt" cols="30" rows="10"></textarea>
                                 </td>
                             </tr>
                             <tr>
                                 <th scope="row">
-                                    <label for="response-type">Type</label>
+                                    <label for="tasks[0].type">Type</label>
                                 </th>
                                 <td>
-                                    <select name="response-type" id="response-type">
+                                    <select name="type" id="tasks[0].type">
                                         <option value="no-response">No Response</option>
                                         <option value="single-select">Single Select</option>
                                         <option value="multi-select">Multi Select</option>
@@ -57,22 +58,22 @@
                             </tr>
                             <tr>
                                 <th scope="row">
-                                    <label for="title">Responses</label>
+                                    <label for="tasks[0].responses[0].title">Responses</label>
                                 </th>
                                 <td class="responses">
                                     <div class="response">
-                                        <input type="checkbox" name="cont-on-comp" id="cont-on-comp" class="correct">
-                                        <input type="text" name="title" id="title" placeholder="Sample Response" class="content">
+                                        <input type="checkbox" name="responses[0].correct" id="tasks[0].responses[0].correct" class="correct">
+                                        <input type="text" name="responses[0].title" id="tasks[0].responses[0].title" placeholder="Sample Response" class="content">
                                         <button class="delete-response">-</button>
                                     </div>
                                     <div class="response">
-                                        <input type="checkbox" name="cont-on-comp" id="cont-on-comp" class="correct">
-                                        <input type="text" name="title" id="title" placeholder="Sample Response" class="content">
+                                        <input type="checkbox" name="responses[1].correct" id="tasks[0].responses[1].correct" class="correct">
+                                        <input type="text" name="responses[1].title" id="tasks[0].responses[1].title" placeholder="Sample Response" class="content">
                                         <button class="delete-response">-</button>
                                     </div>
                                     <div class="response">
-                                        <input type="checkbox" name="cont-on-comp" id="cont-on-comp" class="correct">
-                                        <input type="text" name="title" id="title" placeholder="Sample Response" class="content">
+                                        <input type="checkbox" name="responses[2].correct" id="tasks[0].responses[2].correct" class="correct">
+                                        <input type="text" name="responses[2].title" id="tasks[0].responses[2].title" placeholder="Sample Response" class="content">
                                         <button class="delete-response">-</button>
                                     </div>
                                     <button class="add-response">ADD RESPONSE</button>
@@ -80,71 +81,71 @@
                             </tr>
                             <tr>
                                 <th scope="row">
-                                    <label for="max-attempts">Max Attempts</label>
+                                    <label for="tasks[0].maxAttempts">Max Attempts</label>
                                 </th>
                                 <td>
-                                    <input type="number" name="max-attempts" id="max-attempts" min="1" max="4" step="1">
+                                    <input type="number" name="maxAttempts" id="tasks[0].maxAttempts" min="1" max="4" step="1">
                                 </td>
                             </tr>
                             <tr>
                                 <th scope="row">
-                                    <label for="required">Required?</label>
+                                    <label for="tasks[0].required">Required?</label>
                                 </th>
                                 <td>
-                                    <input type="checkbox" name="required" id="required">
+                                    <input type="checkbox" name="required" id="tasks[0].required">
                                 </td>
                             </tr>
                             <tr>
                                 <th scope="row">
-                                    <label for="success-value">Success Value</label>
+                                    <label for="tasks[0].successValue">Success Value</label>
                                 </th>
                                 <td>
-                                    <input type="number" name="success-value" id="success-value" min="1" max="4" step="1">
+                                    <input type="number" name="successValue" id="tasks[0].successValue" min="1" max="4" step="1">
                                 </td>
                             </tr>
                             <tr>
                                 <th scope="row">
-                                    <label for="scale-success-value">Scale Success Value?</label>
+                                    <label for="tasks[0].scaleSuccessValue">Scale Success Value?</label>
                                 </th>
                                 <td>
-                                    <input type="checkbox" name="scale-success-value" id="scale-success-value">
+                                    <input type="checkbox" name="scaleSuccessValue" id="tasks[0].scaleSuccessValue">
                                 </td>
                             </tr>
                             <tr>
                                 <th scope="row">
-                                    <label for="fail-value">Fail Value</label>
+                                    <label for="tasks[0].failValue">Fail Value</label>
                                 </th>
                                 <td>
-                                    <input type="number" name="fail-value" id="fail-value" min="1" max="4" step="1">
+                                    <input type="number" name="failValue" id="tasks[0].failValue" min="1" max="4" step="1">
                                 </td>
                             </tr>
                             <tr>
                                 <th scope="row">
-                                    <label for="scale-fail-value">Scale Fail Value?</label>
+                                    <label for="tasks[0].scaleFailValue">Scale Fail Value?</label>
                                 </th>
                                 <td>
-                                    <input type="checkbox" name="scale-fail-value" id="scale-fail-value">
+                                    <input type="checkbox" name="scaleFailValue" id="tasks[0].scaleFailValue">
                                 </td>
                             </tr>
                             <tr>
                                 <th scope="row">
-                                    <label for="success-msg">Success Message</label>
+                                    <label for="tasks[0].successMessage">Success Message</label>
                                 </th>
                                 <td>
                                     <div class="completion-msg">
-                                        <input type="checkbox" name="has-success-message" id="has-success-message">
-                                        <textarea name="success-msg" id="success-msg" cols="30" rows="5"></textarea>
+                                        <input type="checkbox" name="hasSuccessMessage" id="tasks[0].hasSuccessMessage">
+                                        <textarea name="successMessage" id="tasks[0].successMessage" cols="30" rows="5"></textarea>
                                     </div>
                                 </td>
                             </tr>
                             <tr>
                                 <th scope="row">
-                                    <label for="fail-msg">Fail Message</label>
+                                    <label for="tasks[0].failMessage">Fail Message</label>
                                 </th>
                                 <td>
                                     <div class="completion-msg">
-                                        <input type="checkbox" name="has-fail-message" id="has-fail-message">
-                                        <textarea name="fail-msg" id="fail-msg" cols="30" rows="5"></textarea>
+                                        <input type="checkbox" name="hasFailMessage" id="tasks[0].hasFailMessage">
+                                        <textarea name="failMessage" id="tasks[0].failMessage" cols="30" rows="5"></textarea>
                                     </div>
                                 </td>
                             </tr>
@@ -154,30 +155,30 @@
                 <div class="task-definition">
                     <h2>Task 1</h2>
                     <button class="delete-task">DELETE TASK</button>
-                    <form>
+                    <form id="tasks[1]">
                         <table class="game-config-options">
                             <tr>
                                 <th scope="row">
-                                    <label for="title">Title</label>
+                                    <label for="tasks[1].title">Title</label>
                                 </th>
                                 <td>
-                                    <input type="text" name="title" id="title" placeholder="Sample Game">
+                                    <input type="text" name="title" id="tasks[1].title" placeholder="Sample Game">
                                 </td>
                             </tr>
                             <tr>
                                 <th scope="row">
-                                    <label for="prompt">Prompt</label>
+                                    <label for="tasks[1].prompt">Prompt</label>
                                 </th>
                                 <td>
-                                    <textarea name="prompt" id="prompt" cols="30" rows="10"></textarea>
+                                    <textarea name="prompt" id="tasks[1].prompt" cols="30" rows="10"></textarea>
                                 </td>
                             </tr>
                             <tr>
                                 <th scope="row">
-                                    <label for="response-type">Type</label>
+                                    <label for="tasks[1].type">Type</label>
                                 </th>
                                 <td>
-                                    <select name="response-type" id="response-type">
+                                    <select name="type" id="tasks[1].type">
                                         <option value="no-response">No Response</option>
                                         <option value="single-select">Single Select</option>
                                         <option value="multi-select">Multi Select</option>
@@ -187,22 +188,22 @@
                             </tr>
                             <tr>
                                 <th scope="row">
-                                    <label for="title">Responses</label>
+                                    <label for="tasks[1].responses[0].title">Responses</label>
                                 </th>
                                 <td class="responses">
                                     <div class="response">
-                                        <input type="checkbox" name="cont-on-comp" id="cont-on-comp" class="correct">
-                                        <input type="text" name="title" id="title" placeholder="Sample Response" class="content">
+                                        <input type="checkbox" name="responses[0].correct" id="tasks[1].responses[0].correct" class="correct">
+                                        <input type="text" name="responses[0].title" id="tasks[1].responses[0].title" placeholder="Sample Response" class="content">
                                         <button class="delete-response">-</button>
                                     </div>
                                     <div class="response">
-                                        <input type="checkbox" name="cont-on-comp" id="cont-on-comp" class="correct">
-                                        <input type="text" name="title" id="title" placeholder="Sample Response" class="content">
+                                        <input type="checkbox" name="responses[1].correct" id="tasks[1].responses[1].correct" class="correct">
+                                        <input type="text" name="responses[1].title" id="tasks[1].responses[1].title" placeholder="Sample Response" class="content">
                                         <button class="delete-response">-</button>
                                     </div>
                                     <div class="response">
-                                        <input type="checkbox" name="cont-on-comp" id="cont-on-comp" class="correct">
-                                        <input type="text" name="title" id="title" placeholder="Sample Response" class="content">
+                                        <input type="checkbox" name="responses[2].correct" id="tasks[1].responses[2].correct" class="correct">
+                                        <input type="text" name="responses[2].title" id="tasks[1].responses[2].title" placeholder="Sample Response" class="content">
                                         <button class="delete-response">-</button>
                                     </div>
                                     <button class="add-response">ADD RESPONSE</button>
@@ -210,66 +211,72 @@
                             </tr>
                             <tr>
                                 <th scope="row">
-                                    <label for="max-attempts">Max Attempts</label>
+                                    <label for="tasks[1].maxAttempts">Max Attempts</label>
                                 </th>
                                 <td>
-                                    <input type="number" name="max-attempts" id="max-attempts" min="1" max="4" step="1">
+                                    <input type="number" name="maxAttempts" id="tasks[1].maxAttempts" min="1" max="4" step="1">
                                 </td>
                             </tr>
                             <tr>
                                 <th scope="row">
-                                    <label for="required">Required?</label>
+                                    <label for="tasks[1].required">Required?</label>
                                 </th>
                                 <td>
-                                    <input type="checkbox" name="required" id="required">
+                                    <input type="checkbox" name="required" id="tasks[1].required">
                                 </td>
                             </tr>
                             <tr>
                                 <th scope="row">
-                                    <label for="success-value">Success Value</label>
+                                    <label for="tasks[1].successValue">Success Value</label>
                                 </th>
                                 <td>
-                                    <input type="number" name="success-value" id="success-value" min="1" max="4" step="1">
+                                    <input type="number" name="successValue" id="tasks[1].successValue" min="1" max="4" step="1">
                                 </td>
                             </tr>
                             <tr>
                                 <th scope="row">
-                                    <label for="scale-success-value">Scale Success Value?</label>
+                                    <label for="tasks[1].scaleSuccessValue">Scale Success Value?</label>
                                 </th>
                                 <td>
-                                    <input type="checkbox" name="scale-success-value" id="scale-success-value">
+                                    <input type="checkbox" name="scaleSuccessValue" id="tasks[1].scaleSuccessValue">
                                 </td>
                             </tr>
                             <tr>
                                 <th scope="row">
-                                    <label for="fail-value">Fail Value</label>
+                                    <label for="tasks[1].failValue">Fail Value</label>
                                 </th>
                                 <td>
-                                    <input type="number" name="fail-value" id="fail-value" min="1" max="4" step="1">
+                                    <input type="number" name="failValue" id="tasks[1].failValue" min="1" max="4" step="1">
                                 </td>
                             </tr>
                             <tr>
                                 <th scope="row">
-                                    <label for="scale-fail-value">Scale Fail Value?</label>
+                                    <label for="tasks[1].scaleFailValue">Scale Fail Value?</label>
                                 </th>
                                 <td>
-                                    <input type="checkbox" name="scale-fail-value" id="scale-fail-value">
+                                    <input type="checkbox" name="scaleFailValue" id="tasks[1].scaleFailValue">
                                 </td>
                             </tr>
                             <tr>
                                 <th scope="row">
-                                    <label for="success-msg">Success Message</label>
+                                    <label for="tasks[1].successMessage">Success Message</label>
                                 </th>
                                 <td>
-                                    <textarea name="success-msg" id="success-msg" cols="30" rows="5"></textarea>
+                                    <div class="completion-msg">
+                                        <input type="checkbox" name="hasSuccessMessage" id="tasks[1].hasSuccessMessage">
+                                        <textarea name="successMessage" id="tasks[1].successMessage" cols="30" rows="5"></textarea>
+                                    </div>
                                 </td>
                             </tr>
                             <tr>
                                 <th scope="row">
-                                    <label for="fail-msg">Fail Message</label>
+                                    <label for="tasks[1].failMessage">Fail Message</label>
                                 </th>
                                 <td>
-                                    <textarea name="fail-msg" id="fail-msg" cols="30" rows="5"></textarea>
+                                    <div class="completion-msg">
+                                        <input type="checkbox" name="hasFailMessage" id="tasks[1].hasFailMessage">
+                                        <textarea name="failMessage" id="tasks[1].failMessage" cols="30" rows="5"></textarea>
+                                    </div>
                                 </td>
                             </tr>
                         </table>

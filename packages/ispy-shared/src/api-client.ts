@@ -139,6 +139,7 @@ export class ApiClient implements Requests.HttpRequests {
     createGame = (request: Requests.CreateGameRequest) => this.axios
         .post(Paths.createGame, request)
         .then(r => { this.setCredentials(r.data); return r.data });
+    getGameState = async () => this.axios.get(Paths.getGameState).then(r => r.data);
     validateGame = async (request: Api.GameConfiguration) => {
         try {
             await this.axios.post(Paths.validateGame, request);

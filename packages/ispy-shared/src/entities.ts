@@ -5,11 +5,11 @@ import { z } from "zod";
 // Low level models
 
 export const UsernameModel = z.object({ 
-    username: z.string().refine(s => 8 <= s.length && s.length <= 12)
+    username: z.string().refine(s => 8 <= s.length && s.length <= 12),
 });
 
 export const PasswordModel = z.object({ 
-    password: z.string().refine(s => 8 <= s.length && s.length <= 100) 
+    password: z.string().refine(s => 8 <= s.length && s.length <= 100),
 });
 
 export const AccessTokenModel = z.object({ accessToken: z.string() });
@@ -38,23 +38,23 @@ export const UserRoleModel = z.enum(["player", "host", "admin"]);
 
 export const UserModel = z.object({
     id: z.string(),
-    username: UsernameModel,
-    password: PasswordModel,
     role: UserRoleModel,
-});
+})
+    .extend(UsernameModel.shape)
+    .extend(PasswordModel.shape);
 
-const TaskSuccessValueModel = z.number().int().refine(n => 0 <= n && n <= 100);
-const TaskScaleSuccessValueModel = z.number().int().refine(n => -1 <= n && n <= 1);
-const TaskFailValueModel = z.number().int().refine(n => 0 <= n && n <= 100);
-const TaskScaleFailValueModel = z.number().int().refine(n => -1 <= n && n <= 1);
-const TaskResponseModel = z.object({
+export const TaskSuccessValueModel = z.number().int().refine(n => 0 <= n && n <= 100);
+export const TaskScaleSuccessValueModel = z.number().int().refine(n => -1 <= n && n <= 1);
+export const TaskFailValueModel = z.number().int().refine(n => 0 <= n && n <= 100);
+export const TaskScaleFailValueModel = z.number().int().refine(n => -1 <= n && n <= 1);
+export const TaskResponseModel = z.object({
     // automatically assigned on game creation
     id: z.string().optional(),
     content: z.string().refine(s => s.length <= 150),
     correct: z.boolean(),
 });
 
-const RawTaskModel = z.object({
+export const RawTaskModel = z.object({
     // automatically assigned on game creation
     id: z.string().optional(),
 
@@ -62,7 +62,7 @@ const RawTaskModel = z.object({
 
     prompt: z.string().refine(s => s.length <= 500),
 
-    type: z.enum(["no response", "single select", "multi select", "multiple choice"]),
+    type: z.enum(["no-response", "single-select", "multi-select", "multiple-choice"]),
 
     responses: z.array(TaskResponseModel),
 
@@ -72,11 +72,11 @@ const RawTaskModel = z.object({
 
     required: z.boolean(),
 
-    // if true, the success value of this task will be hidden from the player, and hides whether it's scaled over time (both shown by default)
-	// false by default
     successValue: TaskSuccessValueModel,
 
-    hideSuccessValue: z.boolean(),
+    // if true, the success value of this task will be hidden from the player, and hides whether it's scaled over time (both shown by default)
+	// false by default
+    // hideSuccessValue: z.boolean(),
 
     // integer, [-1, 0, 1]
     // if true, the value for completing this task successfully will be scaled down linearly as time progresses
@@ -89,7 +89,7 @@ const RawTaskModel = z.object({
 
     // if true, the fail value of this task will be hidden from the player, and hides whether it's scaled over time (both shown by default)
     // false by default
-    hideFailValue: z.boolean(),
+    // hideFailValue: z.boolean(),
 
     // integer, [-1, 0, 1]
     // if true, the value for failing this task will be scaled down linearly as time progresses
@@ -104,9 +104,9 @@ const RawTaskModel = z.object({
 
 export const TaskModel = RawTaskModel.refine(o => (
     o.maxAttempts <= o.responses.length - 1 
-    && o.type == "single select" ? o.responses.length == 1
-        : o.type == "multi select" ? 0 <= o.responses.length && o.responses.length <= 4
-        : o.type == "multiple choice" ? 2 <= o.responses.length && o.responses.length <= 4
+    && o.type == "single-select" ? o.responses.length == 1
+        : o.type == "multi-select" ? 0 <= o.responses.length && o.responses.length <= 4
+        : o.type == "multiple-choice" ? 2 <= o.responses.length && o.responses.length <= 4
         : o.responses.length == 0
 ));
 
@@ -124,7 +124,10 @@ export const PublicTaskModel = RawTaskModel.omit({
     responses: z.array(TaskResponseModel.omit({ correct: true })),
 });
 
-export const GameConfigurationModel = z.object({
+export const RawGameConfigurationModel = z.object({
+    // automatically assigned on game creation
+    id: z.string().optional(),
+
     title: z.string(),
 
     // between 1 and 20 tasks must be defined
@@ -145,18 +148,20 @@ export const GameConfigurationModel = z.object({
 	// integer, [minPlayers, 100]
     maxPlayers: z.number().int().refine(n => n <= 100),
 
-    // date, [60 + current time, 86400 + current time]
-    startDate: z.date(),
+    // number, [60 + current time, 86400 + current time]
+    startTime: z.number().int(),
 
     // date, [60 + startDate, 86400 + startDate]
     // cannot be defined if time limit is defined
     // host can always manually end the game even if the time limit isn't reached
-    endDate: z.date(),
+    endTime: z.number().int(),
 
     // default: false
     lockedWhileRunning: z.boolean(),
-}).refine(o => {
-    const timeDelta = o.endDate.getTime() - o.startDate.getTime();
+});
+
+export const GameConfigurationModel = RawGameConfigurationModel.refine(o => {
+    const timeDelta = o.endTime - o.startTime;
     return (
         (!o.continueOnCompletion || o.minPlayersToComplete !== 0) 
         && o.minPlayersToComplete <= o.maxPlayers
@@ -165,7 +170,7 @@ export const GameConfigurationModel = z.object({
     );
 });
 
-export const GameStateModel = z.enum(["not ready", "ready", "running", "ended"]);
+export const GameStateModel = z.enum(["no-game", "not-ready", "ready", "running"]);
 
 export const GameStatsModel = z.object({
     id: z.string(),
@@ -183,9 +188,11 @@ export const GameStatsModel = z.object({
 
     admins: z.string().array(),
 
-    startTime: z.date().nullable(),
+    numRequiredTasks: z.number().int(),
 
-    endTime: z.date().nullable(),
+    startTime: z.number().int().nullable(),
+
+    endTime: z.number().int().nullable(),
 
     completed: z.boolean(),
 });
@@ -211,7 +218,7 @@ export const AdminModel = z.object({
 export const TaskSubmissionModel = z.object({
     taskId: z.string(),
     title: z.string(),
-    submitTime: z.date(),
+    submitTime: z.number().int(),
     responseId: z.string(),
     responseContent: z.string(),
     correct: z.boolean(),
@@ -223,7 +230,6 @@ export const PlayerModel = z.object({
     points: z.number(),
     ranking: z.number(),
     completed: z.boolean(),
-    pointsForNextRank: z.number(),
 });
 
 export const EnhancedPlayerModel = PlayerModel.extend({
@@ -235,13 +241,8 @@ export const GameModel = z.object({
     leaderboard: LeaderboardEntryModel.array(),
 });
 
-export const GameResultsModel = z.object({
-    host: z.string(),
-    players: EnhancedPlayerModel.array(),
-});
-
 export const GameHistoryModel = z.object({
-    results: GameResultsModel.array(),
+    results: GameModel.array(),
 });
 
 export type UserRole = z.infer<typeof UserRoleModel>;
@@ -258,13 +259,11 @@ export type TaskSubmission = z.infer<typeof TaskSubmissionModel>;
 export type Player = z.infer<typeof PlayerModel>;
 export type EnhancedPlayer = z.infer<typeof EnhancedPlayerModel>;
 export type Game = z.infer<typeof GameModel>;
-export type GameResults = z.infer<typeof GameResultsModel>;
 export type GameHistory = z.infer<typeof GameHistoryModel>;
 
 export type AppMetrics = {
     numPlayers: number;
     numAdmins: number;
-    gameRunning: boolean;
     gameState: GameState;
     gameLocked: boolean;
 }

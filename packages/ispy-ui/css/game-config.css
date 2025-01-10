@@ -300,3 +300,8 @@ body
     gap: 8px;
     align-items: center;
 }
+
+.task-definition .completion-msg input:not(:checked) + textarea
+{
+    display: none;
+}

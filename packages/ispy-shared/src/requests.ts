@@ -3,14 +3,6 @@
 import { z } from "zod";
 import * as Api from "./entities";
 
-function omitAuth() {
-
-}
-
-function authHeader() {
-
-}
-
 // == Request Models == //
 
 export const CreateGameRequestModel = z.object({
@@ -45,11 +37,12 @@ export interface HttpRequests {
     ping: () => Promise<void>;
     metrics: () => Promise<Api.AppMetrics>;
     createGame: (request: CreateGameRequest) => Promise<Api.BearerAuth>;
+    getGameState: () => Promise<Api.GameState>;
     validateGame: (request: Api.GameConfiguration) => Promise<boolean>;
     getGameHistory: () => Promise<Api.GameHistory>;
     exportGamePdf: () => Promise<Api.GameExport>;
     joinGame: (request: Api.BasicAuth) => Promise<Api.BearerAuth>;
-    authenticate: (request: Api.AccessToken) => Promise<boolean>;
+    authenticate: (request: Api.AccessToken) => Promise<void>;
     refreshCredentials: (request: Api.RefreshToken) => Promise<Api.BearerAuth>;
 
     leaveGame: (request: Api.Username) => Promise<void>;
@@ -87,13 +80,21 @@ export interface WebsocketClientRequests {
 // Requests that can be sent from the server to the client
 export interface WebsocketServerRequests {
     authenticateAck: () => void;
-    viewTaskInfoAck: () => void;
+    // sent when viewTaskInfo is initially sent
+    viewTaskInfoAck: (request: Api.PublicTask) => void;
+    // sent when task info changes
+    // success and fail values can change if they're scaled
     taskInfo: (request: Api.PublicTask) => void;
-    viewGameInfoAck: () => void;
+    // sent when viewGameInfo is initially sent
+    viewGameInfoAck: (request: Api.PublicGameStats) => void;
+    // sent when public game stats changes
+    // game state, start time, and end time can change
     gameInfo: (request: Api.PublicGameStats) => void;
-    viewGameHostInfoAck: () => void;
+    // sent when viewGameHostInfo is initially sent
+    viewGameHostInfoAck: (request: Api.Game) => void;
+    // sent when game changes
+    // game state, start time, end time, task info, and num players can change
     gameHostInfo: (request: Api.Game) => void;
-    gameEnded: (request: Api.GameResults) => void;
 }
 
 // Structure for all websocket messages
@@ -111,6 +112,7 @@ export const REQUEST_ROLE_REQUIREMENTS: Record<keyof HttpRequests, Api.UserRole[
     ping: undefined,
     metrics: undefined,
     createGame: undefined,
+    getGameState: undefined,
     validateGame: undefined,
     getGameHistory: undefined,
     exportGamePdf: undefined,
@@ -142,6 +144,7 @@ export const Paths: Record<keyof HttpRequests, string> = {
     ping: "/",
     metrics: "/metrics",
     createGame: "/game",
+    getGameState: "/game/state",
     validateGame: "/game/validate",
     getGameHistory: "/game/history",
     exportGamePdf: "/game/export",

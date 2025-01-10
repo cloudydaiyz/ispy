@@ -32,7 +32,7 @@
 {
     font-family: var(--font-2);
     color: var(--white);
-    font-size: 4rem;
+    font-size: 3rem;
     font-weight: 700;
     white-space: nowrap;
 
@@ -46,7 +46,7 @@
 .pregame-form > p
 {
     font-weight: 400;
-    font-size: 1.8rem;
+    font-size: 1.4rem;
     margin-bottom: 16px;
     color: var(--black);
 }

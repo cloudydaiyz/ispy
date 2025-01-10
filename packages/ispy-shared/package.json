@@ -12,5 +12,11 @@
   "dependencies": {
     "axios": "^1.7.9",
     "zod": "^3.24.1"
+  },
+  "exports": {
+    ".": {
+      "default": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
   }
 }
