@@ -12,7 +12,13 @@ export const CreateGameRequestModel = z.object({
     admins: Api.AdminModel.array().refine(a => a.length <= 3),
 });
 
+
+export const SubmitTaskRequestModel = Api.TaskIdModel.extend({
+    responses: z.string().array(),
+});
+
 export type CreateGameRequest = z.infer<typeof CreateGameRequestModel>;
+export type SubmitTaskRequest = z.infer<typeof SubmitTaskRequestModel>;
 
 // == Responses == //
 
@@ -46,9 +52,8 @@ export interface HttpRequests {
     refreshCredentials: (request: Api.RefreshToken) => Promise<Api.BearerAuth>;
 
     leaveGame: (request: Api.Username) => Promise<void>;
-    submitTask: (request: Api.TaskId) => Promise<void>;
+    submitTask: (request: SubmitTaskRequest) => Promise<Api.TaskSubmission>;
     startGame: () => Promise<void>;
-    endGame: () => Promise<void>;
     viewPlayerInfo: (request: Api.Username) => Promise<Api.EnhancedPlayer>;
     viewTaskInfo: (request: Api.TaskId) => Promise<Api.PublicTask>;
     viewGameInfo: () => Promise<Api.PublicGameStats>;
@@ -60,11 +65,12 @@ export interface HttpRequests {
     viewTaskHostInfo: (request: Api.TaskId) => Promise<Api.Task>;
     viewGameHostInfo: () => Promise<Api.Game>;
 
+    endGame: () => Promise<void>;
     removeAdmin: (request: Api.Username) => Promise<void>;
 }
 
 // Requests that can be sent from the client to the server
-export interface WebsocketClientRequests {
+export interface WebsocketServerRequests {
     authenticate: (request: Api.AccessToken) => boolean;
 
     // initiates the retrieval of task info
@@ -78,7 +84,7 @@ export interface WebsocketClientRequests {
 }
 
 // Requests that can be sent from the server to the client
-export interface WebsocketServerRequests {
+export interface WebsocketClientRequests {
     authenticateAck: () => void;
     // sent when viewTaskInfo is initially sent
     viewTaskInfoAck: (request: Api.PublicTask) => void;
@@ -127,7 +133,6 @@ export const REQUEST_ROLE_REQUIREMENTS: Record<keyof HttpRequests, Api.UserRole[
     viewGameInfo: ["player"],
 
     startGame: ["host", "admin"],
-    endGame: ["host", "admin"],
     kickPlayer: ["host", "admin"],
     kickAllPlayers: ["host", "admin"],
     lockGame: ["host", "admin"],
@@ -135,6 +140,7 @@ export const REQUEST_ROLE_REQUIREMENTS: Record<keyof HttpRequests, Api.UserRole[
     viewTaskHostInfo: ["host", "admin"],
     viewGameHostInfo: ["host", "admin"],
 
+    endGame: ["host"],
     // an admin can remove themself
     removeAdmin: ["host", "admin"],
 }
@@ -159,12 +165,13 @@ export const Paths: Record<keyof HttpRequests, string> = {
     viewGameInfo: "/game",
 
     startGame: "/game/host/start-game",
-    endGame: "/game/host/end-game",
     kickPlayer: "/game/host/kick-player",
     kickAllPlayers: "/game/host/kick-all",
     lockGame: "/game/host/lock",
     unlockGame: "/game/host/unlock",
     viewTaskHostInfo: "/game/host/task",
     viewGameHostInfo: "/game/host",
+
+    endGame: "/game/host/end-game",
     removeAdmin: "/game/host/remove-admin",
 }

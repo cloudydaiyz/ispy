@@ -1,0 +1,1 @@
+export const AUTH_SALT_ROUNDS = 10;

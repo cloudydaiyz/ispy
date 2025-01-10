@@ -159,13 +159,12 @@ export class ApiClient implements Requests.HttpRequests {
         .then(r => { this.setCredentials(r.data); return r.data });
     
     leaveGame = async (request: Api.Username) => { await this.axios.post(Paths.leaveGame, request, this.useAuth()) };
-    submitTask = async (request: Api.TaskId) => { await this.axios.post(Paths.submitTask, request, this.useAuth()) };
+    submitTask = async (request: Requests.SubmitTaskRequest) => this.axios.post(Paths.submitTask, request, this.useAuth()).then(r => r.data);
     viewPlayerInfo = (request: Api.Username) => this.axios.post(Paths.viewPlayerInfo, request, this.useAuth()).then(r => r.data);
     viewTaskInfo = (request: Api.TaskId) => this.axios.post(Paths.viewTaskInfo, request, this.useAuth()).then(r => r.data);
     viewGameInfo = () => this.axios.post(Paths.viewGameInfo, undefined, this.useAuth()).then(r => r.data);
 
     startGame = async () => { await this.axios.post(Paths.startGame, undefined, this.useAuth()) };
-    endGame = async () => { await this.axios.post(Paths.endGame, undefined, this.useAuth()) };
     kickPlayer = async (request: Api.Username) => { await this.axios.post(Paths.kickPlayer, request, this.useAuth()) };
     kickAllPlayers = async () => { await this.axios.post(Paths.kickAllPlayers, undefined, this.useAuth()) };
     lockGame = async () => { await this.axios.post(Paths.lockGame, undefined, this.useAuth()) };
@@ -173,6 +172,7 @@ export class ApiClient implements Requests.HttpRequests {
     viewTaskHostInfo = (request: Api.TaskId) => this.axios.post(Paths.viewTaskHostInfo, request, this.useAuth()).then(r => r.data);
     viewGameHostInfo = () => this.axios.post(Paths.viewGameHostInfo, undefined, this.useAuth()).then(r => r.data);
 
+    endGame = async () => { await this.axios.post(Paths.endGame, undefined, this.useAuth()) };
     removeAdmin = async (request: Api.Username) => { await this.axios.post(Paths.removeAdmin, request, this.useAuth()) };
 }
 

@@ -152,7 +152,6 @@ export const RawGameConfigurationModel = z.object({
     startTime: z.number().int(),
 
     // date, [60 + startDate, 86400 + startDate]
-    // cannot be defined if time limit is defined
     // host can always manually end the game even if the time limit isn't reached
     endTime: z.number().int(),
 
@@ -190,9 +189,11 @@ export const GameStatsModel = z.object({
 
     numRequiredTasks: z.number().int(),
 
-    startTime: z.number().int().nullable(),
+    startTime: z.number().int(),
 
-    endTime: z.number().int().nullable(),
+    endTime: z.number().int(),
+
+    playersCompleted: z.number(),
 
     completed: z.boolean(),
 });
@@ -219,8 +220,8 @@ export const TaskSubmissionModel = z.object({
     taskId: z.string(),
     title: z.string(),
     submitTime: z.number().int(),
-    responseId: z.string(),
-    responseContent: z.string(),
+    responses: z.array(TaskResponseModel),
+    required: z.boolean(),
     correct: z.boolean(),
     pointsDelta: z.number(),
 });

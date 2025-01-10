@@ -3,13 +3,18 @@ import { Entities } from "@cloudydaiyz/ispy-shared";
 // redis hash
 interface UserStore {
     readUser: (username: string) => Promise<Entities.User>;
-    writeUser: (username: string, props: Partial<Entities.User>) => Promise<void>;
+    // cannot edit user info once it's stored
+    // user w/ username must not already exist in the db
+    writeUser: (username: string, props: Entities.User) => Promise<void>;
     dropUser: (username: string) => Promise<void>;
+    dropUsers: () => Promise<void>;
 }
 
 // redis json
 interface GameStatsStore {
     readGameStats: () => Promise<Entities.GameStats>;
+    readGameConfig: () => Promise<Entities.GameConfiguration>;
+    readTask: (taskId: string) => Promise<Entities.Task>;
     writeGameStats: (props: Partial<Entities.GameStats>) => Promise<void>;
     dropGameStats: () => Promise<void>;
 }
@@ -20,9 +25,18 @@ interface LeaderboardStore {
     readLeaderboard: () => Promise<Entities.LeaderboardEntry[]>;
     getPlayerInfo: (username: string) => Promise<LeaderboardInfo>;
     // returns the player's rank
+    /**
+        await ctx.db.writePlayer(request.username, {
+            username: request.username,
+            points: 0,
+            ranking,
+            completed: false,
+            tasksSubmitted: [],
+        });
+     */
     newPlayer: (username: string) => Promise<number>;
     // returns the player's new rank
-    updatePlayerScore: (username: string, score: number) => Promise<number>;
+    updatePlayerScore: (username: string, scoreDelta: number) => Promise<number>;
     dropPlayer: (username: string) => Promise<void>;
     dropLeaderboard: () => Promise<void>;
 }
@@ -30,15 +44,20 @@ interface LeaderboardStore {
 // redis sorted set + hash
 interface AdminStore {
     readAdmin: (username: string) => Promise<Entities.Admin>;
+    createAdmins: (props: Entities.Admin[]) => Promise<void>;
     writeAdmin: (username: string, props: Partial<Entities.Admin>) => Promise<void>;
     dropAdmins: () => Promise<void>;
 }
 
 // redis json
+// not redis hash (for player) + stream (for tasks submitted) since the data is 
+// always updated & accessed together
+// serialize responses in task submission to a string
 interface PlayerStore {
     readPlayer: (username: string) => Promise<Entities.EnhancedPlayer>;
     writePlayer: (username: string, props: Partial<Entities.EnhancedPlayer>) => Promise<void>;
     dropPlayer: (username: string) => Promise<void>;
+    pushTaskSubmission: (username: string, props: Entities.TaskSubmission) => Promise<void>;
     dropPlayers: () => Promise<void>;
 }
 
@@ -56,15 +75,35 @@ interface AppMetricsStore {
 }
 
 interface AppStore {
-    // clears everything except game history
+    // Clears everything except game history
     clearGame: () => Promise<void>;
+
+    // Watches the keys used in subsequent calls to the database up until
+    // `commitTransaction` is called. Only available in Redis adapter
+    startWatch?: () => Promise<void>;
+    startTransaction: () => Promise<void>;
+    commitTransaction: () => Promise<void>;
+    // Cancel, but not roll back, the transaction
+    // https://redis.io/docs/latest/develop/interact/transactions/#what-about-rollbacks
+    cancelTransaction: () => Promise<void>;
 }
 
-export type DatabaseCtx = AppStore
-    & AppMetricsStore
-    & GameHistoryStore
-    & PlayerStore
-    & AdminStore
-    & LeaderboardStore
-    & GameStatsStore
-    & UserStore;
+// export type DatabaseCtx = AppStore
+//     & AppMetricsStore
+//     & GameHistoryStore
+//     & PlayerStore
+//     & AdminStore
+//     & LeaderboardStore
+//     & GameStatsStore
+//     & UserStore;
+
+export type DatabaseCtx = {
+    appStore: AppStore,
+    appMetricsStore: AppMetricsStore,
+    gameHistoryStore: GameHistoryStore,
+    playerStore: PlayerStore,
+    adminStore: AdminStore,
+    leaderboardStore: LeaderboardStore,
+    gameStatsStore: GameStatsStore,
+    userStore: UserStore,
+}

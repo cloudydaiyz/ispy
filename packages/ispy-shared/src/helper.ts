@@ -6,18 +6,6 @@ export async function delay(timeout: number): Promise<void> {
     });
 }
 
-export function getCurrentPointValue(
-    currentTime: number, 
-    initialValue: number, 
-    startTime: number, 
-    endTime: number
-) : number {
-    return Math.floor(
-        (initialValue / (startTime - endTime)) * currentTime 
-        - ((initialValue * endTime) / (startTime - endTime))
-    );
-}
-
 /**
  * This linked list allows you to opt in to use tags stored with elements to:
  * 
