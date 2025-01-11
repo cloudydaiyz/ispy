@@ -102,7 +102,6 @@ export class ApiClient implements Requests.HttpRequests {
             undefined,
             $onResponseError(),
         );
-
         this.ready = this.init();
     }
 

@@ -114,7 +114,8 @@ export const WebsocketRequestModel = z.object({
 export type WebSocketRequest = z.infer<typeof WebsocketRequestModel>;
 
 // Access role requirements for requests
-export const REQUEST_ROLE_REQUIREMENTS: Record<keyof HttpRequests, Api.UserRole[] | undefined> = {
+export type RoleRequirement = Api.UserRole | 'player-self' | 'admin-self';
+export const REQUEST_ROLE_REQUIREMENTS: Record<keyof HttpRequests, RoleRequirement[] | undefined> = {
     ping: undefined,
     metrics: undefined,
     createGame: undefined,
@@ -126,9 +127,9 @@ export const REQUEST_ROLE_REQUIREMENTS: Record<keyof HttpRequests, Api.UserRole[
     authenticate: undefined,
     refreshCredentials: undefined,
 
-    leaveGame: ["player"],
-    submitTask: ["player"],
-    viewPlayerInfo: ["player", "host", "admin"],
+    leaveGame: ["player-self", "admin-self"],
+    submitTask: ["player-self"],
+    viewPlayerInfo: ["host", "admin", "player-self"],
     viewTaskInfo: ["player"],
     viewGameInfo: ["player"],
 
@@ -140,9 +141,8 @@ export const REQUEST_ROLE_REQUIREMENTS: Record<keyof HttpRequests, Api.UserRole[
     viewTaskHostInfo: ["host", "admin"],
     viewGameHostInfo: ["host", "admin"],
 
+    removeAdmin: ["host"],
     endGame: ["host"],
-    // an admin can remove themself
-    removeAdmin: ["host", "admin"],
 }
 
 // Paths

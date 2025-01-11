@@ -15,7 +15,6 @@ interface GameStatsStore {
     readGameStats: () => Promise<Entities.GameStats>;
     readGameConfig: () => Promise<Entities.GameConfiguration>;
     readTask: (taskId: string) => Promise<Entities.Task>;
-    readPlayers: () => Promise<string[]>;
     isGameLocked: () => Promise<boolean>;
     writeGameStats: (props: Partial<Entities.GameStats>) => Promise<void>;
     dropGameStats: () => Promise<void>;
@@ -40,6 +39,7 @@ interface LeaderboardStore {
     // returns the player's new rank
     updatePlayerScore: (username: string, scoreDelta: number) => Promise<number>;
     dropPlayer: (username: string) => Promise<void>;
+    // clears the leaderboard
     dropLeaderboard: () => Promise<void>;
 }
 
