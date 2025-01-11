@@ -7,7 +7,7 @@ interface UserStore {
     // user w/ username must not already exist in the db
     writeUser: (username: string, props: Entities.User) => Promise<void>;
     dropUser: (username: string) => Promise<void>;
-    dropUsers: () => Promise<void>;
+    dropUsers: (usernames?: string[]) => Promise<void>;
 }
 
 // redis json
@@ -15,6 +15,8 @@ interface GameStatsStore {
     readGameStats: () => Promise<Entities.GameStats>;
     readGameConfig: () => Promise<Entities.GameConfiguration>;
     readTask: (taskId: string) => Promise<Entities.Task>;
+    readPlayers: () => Promise<string[]>;
+    isGameLocked: () => Promise<boolean>;
     writeGameStats: (props: Partial<Entities.GameStats>) => Promise<void>;
     dropGameStats: () => Promise<void>;
 }
@@ -46,6 +48,7 @@ interface AdminStore {
     readAdmin: (username: string) => Promise<Entities.Admin>;
     createAdmins: (props: Entities.Admin[]) => Promise<void>;
     writeAdmin: (username: string, props: Partial<Entities.Admin>) => Promise<void>;
+    dropAdmin: (username: string) => Promise<void>;
     dropAdmins: () => Promise<void>;
 }
 
@@ -65,19 +68,16 @@ interface PlayerStore {
 interface GameHistoryStore {
     readGameHistory: () => Promise<Entities.Game[]>;
     pushGame: (results: Entities.Game) => Promise<void>;
-    dropGameHistory: () => Promise<void>;
 }
 
 // redis hash
 interface AppMetricsStore {
     readAppMetrics: () => Promise<Entities.AppMetrics>;
-    writeAppMetrics: (props: Entities.AppMetrics) => Promise<void>;
+    createAppMetrics: () => Promise<void>;
+    writeAppMetrics: (props: Partial<Entities.AppMetrics>) => Promise<void>;
 }
 
 interface AppStore {
-    // Clears everything except game history
-    clearGame: () => Promise<void>;
-
     // Watches the keys used in subsequent calls to the database up until
     // `commitTransaction` is called. Only available in Redis adapter
     startWatch?: () => Promise<void>;

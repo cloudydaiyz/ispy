@@ -1,3 +1,4 @@
+import { Requests } from "@cloudydaiyz/ispy-shared";
 import { DatabaseCtx } from "./db"
 import { SchedulerCtx } from "./scheduler";
 
@@ -13,4 +14,5 @@ type RequestContext = {
 export type Context = {
     app: AppContext,
     req: RequestContext,
+    sock: Requests.WebsocketClientRequests,
 };

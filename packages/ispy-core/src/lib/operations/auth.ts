@@ -6,6 +6,7 @@ import { Entities, Requests } from "@cloudydaiyz/ispy-shared";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import ObjectID from "bson-objectid";
+import assert from "assert";
 
 type AuthJwtPayload = { user: string, role: Entities.UserRole };
 
@@ -29,7 +30,10 @@ export async function refreshCredentials(ctx: Context, request: Entities.Refresh
 }
 
 export async function joinGame(ctx: Context, request: Entities.BasicAuth): Promise<Entities.BearerAuth> {
-    const {userStore, leaderboardStore} = ctx.app.db;
+    const { gameStatsStore, userStore, leaderboardStore } = ctx.app.db;
+    const gameLocked = await gameStatsStore.isGameLocked();
+    assert(!gameLocked, "This game is currently locked. You are unable to join.");
+
     await userStore.writeUser(request.username, {
         id: `${Date.now()}`,
         username: request.username,

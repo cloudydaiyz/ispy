@@ -10,4 +10,5 @@ interface Error {
     clientMessage: string;
     // server message, if any
     serverMessage?: string;
+    requestId: string;
 }
