@@ -9,7 +9,7 @@ const Paths = Requests.Paths;
 
 interface ApiClientConfig extends CreateAxiosDefaults {}
 
-export class ApiClient implements Requests.HttpRequests {
+export class ApiClient implements Requests.HttpOperations {
     axios: AxiosInstance;
     ready: Promise<void>;
     accessToken?: string;

@@ -3,6 +3,7 @@ import { Entities } from "@cloudydaiyz/ispy-shared";
 // redis hash
 interface UserStore {
     readUser: (username: string) => Promise<Entities.User>;
+    readOptionalUser: (username: string) => Promise<Entities.User | undefined>;
     // cannot edit user info once it's stored
     // user w/ username must not already exist in the db
     writeUser: (username: string, props: Entities.User) => Promise<void>;
@@ -46,6 +47,7 @@ interface LeaderboardStore {
 // redis sorted set + hash
 interface AdminStore {
     readAdmin: (username: string) => Promise<Entities.Admin>;
+    readOptionalAdmin: (username: string) => Promise<Entities.Admin | undefined>;
     createAdmins: (props: Entities.Admin[]) => Promise<void>;
     writeAdmin: (username: string, props: Partial<Entities.Admin>) => Promise<void>;
     dropAdmin: (username: string) => Promise<void>;
@@ -87,15 +89,6 @@ interface AppStore {
     // https://redis.io/docs/latest/develop/interact/transactions/#what-about-rollbacks
     cancelTransaction: () => Promise<void>;
 }
-
-// export type DatabaseCtx = AppStore
-//     & AppMetricsStore
-//     & GameHistoryStore
-//     & PlayerStore
-//     & AdminStore
-//     & LeaderboardStore
-//     & GameStatsStore
-//     & UserStore;
 
 export type DatabaseCtx = {
     appStore: AppStore,

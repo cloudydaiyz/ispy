@@ -10,11 +10,12 @@ import assert from "assert";
 
 type AuthJwtPayload = { user: string, role: Entities.UserRole };
 
-export async function authenticate(ctx: Context, request: Entities.AccessToken): Promise<void> {
+export async function authenticate(ctx: Context, request: Entities.AccessToken): Promise<boolean> {
     try {
         jwt.verify(request.accessToken, ACCESS_TOKEN_SECRET);
+        return true;
     } catch {
-        throw new Error("Authentication error");
+        return false;
     }
 }
 
@@ -30,17 +31,34 @@ export async function refreshCredentials(ctx: Context, request: Entities.Refresh
 }
 
 export async function joinGame(ctx: Context, request: Entities.BasicAuth): Promise<Entities.BearerAuth> {
-    const { gameStatsStore, userStore, leaderboardStore } = ctx.app.db;
+    const { gameStatsStore, userStore, leaderboardStore, adminStore } = ctx.app.db;
     const gameLocked = await gameStatsStore.isGameLocked();
     assert(!gameLocked, "This game is currently locked. You are unable to join.");
 
+    const username = request.username;
+    const password = await bcrypt.hash(request.password, AUTH_SALT_ROUNDS);
+    let role: Entities.UserRole = 'player';
+
+    const user = userStore.readOptionalUser(username);
+    assert(!user, "User already exists.");
+
+    const admin = await adminStore.readOptionalAdmin(username);
+    if(admin) {
+        role = 'admin';
+        assert(!admin.userId, "Admin already exists.");
+
+        const adminPass = await bcrypt.hash(admin.password, AUTH_SALT_ROUNDS);
+        assert(password == adminPass, "Invalid credentials.");
+    } else {
+        await leaderboardStore.newPlayer(request.username);
+    }
+
     await userStore.writeUser(request.username, {
-        id: `${Date.now()}`,
-        username: request.username,
-        password: await bcrypt.hash(request.password, AUTH_SALT_ROUNDS),
-        role: "player",
+        id: (new ObjectID()).toHexString(),
+        username,
+        password,
+        role,
     });
-    await leaderboardStore.newPlayer(request.username);
 
     const accessToken = jwt.sign({ user: request.username, role: "player" }, ACCESS_TOKEN_SECRET!, { expiresIn: '1h' });
     const refreshToken = jwt.sign({ user: request.username, role: "player" }, REFRESH_TOKEN_SECRET!, { expiresIn: '2h' });
@@ -50,7 +68,7 @@ export async function joinGame(ctx: Context, request: Entities.BasicAuth): Promi
 export async function createGame(ctx: Context, request: Requests.CreateGameRequest): Promise<Entities.BearerAuth> {
     const { userStore, adminStore } = ctx.app.db;
     await userStore.writeUser(request.hostUsername, {
-        id: `${Date.now()}`,
+        id: (new ObjectID()).toHexString(),
         username: request.hostUsername,
         password: await bcrypt.hash(request.hostPassword, AUTH_SALT_ROUNDS),
         role: "host",

@@ -13,6 +13,10 @@ export async function getGameState(ctx: Context): Promise<Entities.GameState> {
     return stats.state;
 }
 
+export async function validateGame(ctx: Context, request: Entities.GameConfiguration): Promise<boolean> {
+    return true;
+}
+
 export async function getGameHistory(ctx: Context): Promise<Entities.GameHistory> {
     const results = await ctx.app.db.gameHistoryStore.readGameHistory();
     return { results };
@@ -22,14 +26,15 @@ export async function exportGamePdf(ctx: Context): Promise<Entities.GameExport> 
     return { link: 'Unimplemented' };
 }
 
-export async function leaveGame(ctx: Context): Promise<void> {
+export async function leaveGame(ctx: Context, request: Entities.Username): Promise<void> {
     const user = ctx.req.getRequest().currentUser!;
     await dropUser(ctx, user);
+    ctx.sock.disconnect([request.username]);
 }
 
 export async function submitTask(ctx: Context, request: Requests.SubmitTaskRequest): Promise<Entities.TaskSubmission> {
     const { gameStatsStore, leaderboardStore, playerStore } = ctx.app.db;
-    const username = ctx.req.request?.username;
+    const username = ctx.req.getRequest().username;
     const stats = await gameStatsStore.readGameStats();
     const statsUpdate: Partial<Entities.GameStats> = {};
     assert(stats.state == "running", "Cannot submit task. The game hasn't started yet.");
@@ -83,12 +88,15 @@ export async function submitTask(ctx: Context, request: Requests.SubmitTaskReque
     await gameStatsStore.writeGameStats(statsUpdate);
     await playerStore.pushTaskSubmission(username!, submission);
     await playerStore.writePlayer(username!, playerUpdate);
-
     return submission;
 }
 
 export async function startGame(ctx: Context): Promise<void> {
-
+    const { gameStatsStore, appMetricsStore } = ctx.app.db;
+    const stats = await gameStatsStore.readGameStats();
+    assert(stats.state == 'ready', "Unable to start game. The game is not in a ready state.");
+    await gameStatsStore.writeGameStats({ state: 'running', startTime: Date.now() });
+    await appMetricsStore.writeAppMetrics({ gameState: 'running' });
 }
 
 export async function viewPlayerInfo(ctx: Context, request: Entities.Username): Promise<Entities.EnhancedPlayer> {
@@ -150,9 +158,11 @@ export async function endGame(ctx: Context): Promise<void> {
         gameState: "no-game",
         gameLocked: true,
     });
+    ctx.sock.disconnect('all');
 }
 
 export async function removeAdmin(ctx: Context, request: Entities.Username): Promise<void> {
     const user = await ctx.app.db.userStore.readUser(request.username);
     await dropUser(ctx, user);
+    ctx.sock.disconnect([request.username]);
 }

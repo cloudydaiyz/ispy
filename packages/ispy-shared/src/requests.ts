@@ -39,7 +39,7 @@ export type HttpErrorResponse = {
 
 // == API Endpoint Types == //
 
-export interface HttpRequests {
+export interface HttpOperations {
     ping: () => Promise<void>;
     metrics: () => Promise<Api.AppMetrics>;
     createGame: (request: CreateGameRequest) => Promise<Api.BearerAuth>;
@@ -48,7 +48,7 @@ export interface HttpRequests {
     getGameHistory: () => Promise<Api.GameHistory>;
     exportGamePdf: () => Promise<Api.GameExport>;
     joinGame: (request: Api.BasicAuth) => Promise<Api.BearerAuth>;
-    authenticate: (request: Api.AccessToken) => Promise<void>;
+    authenticate: (request: Api.AccessToken) => Promise<boolean>;
     refreshCredentials: (request: Api.RefreshToken) => Promise<Api.BearerAuth>;
 
     leaveGame: (request: Api.Username) => Promise<void>;
@@ -70,23 +70,33 @@ export interface HttpRequests {
 }
 
 // Requests that can be sent from the client to the server
-export interface WebsocketServerRequests {
+export interface WebsocketClientOperations {
+    // authenticates the client; must be sent as the first request in
+    // connection within timeout, else the the client will be disconnected
     authenticate: (request: Api.AccessToken) => boolean;
 
-    // initiates the retrieval of task info
+    // initiates the retrieval of task info for player
     viewTaskInfo: (request: Api.TaskId) => void;
+
+    // cancels the retrieval of task info for player
+    cancelViewTaskInfo: (request: Api.TaskId) => void;
 
     // initiates the retrieval of game info for player
     viewGameInfo: (request: Api.GameId) => void;
+
+    // cancels the retrieval of game info for the player
+    cancelViewGameInfo: (request: Api.GameId) => void;
 
     // initiates the retrieval of game info for host
     viewGameHostInfo: (request: Api.GameId) => void;
 }
 
 // Requests that can be sent from the server to the client
-export interface WebsocketClientRequests {
+export interface WebsocketServerOperations {
+    // sent when authenticate is sent
     authenticateAck: () => void;
     // sent when viewTaskInfo is initially sent
+    // task info requests will be sent afterwards
     viewTaskInfoAck: (request: Api.PublicTask) => void;
     // sent when task info changes
     // success and fail values can change if they're scaled
@@ -101,6 +111,8 @@ export interface WebsocketClientRequests {
     // sent when game changes
     // game state, start time, end time, task info, and num players can change
     gameHostInfo: (request: Api.Game) => void;
+    // sent when game ends; disconnected afterwards
+    gameEnded: (request: Api.Game) => void;
 }
 
 // Structure for all websocket messages
@@ -111,11 +123,11 @@ export const WebsocketRequestModel = z.object({
     // Input for the request method
     payload: z.record(z.string(), z.any()).optional(),
 });
-export type WebSocketRequest = z.infer<typeof WebsocketRequestModel>;
+export type WebsocketRequest = z.infer<typeof WebsocketRequestModel>;
 
 // Access role requirements for requests
 export type RoleRequirement = Api.UserRole | 'player-self' | 'admin-self';
-export const REQUEST_ROLE_REQUIREMENTS: Record<keyof HttpRequests, RoleRequirement[] | undefined> = {
+export const REQUEST_ROLE_REQUIREMENTS: Record<keyof HttpOperations, RoleRequirement[] | undefined> = {
     ping: undefined,
     metrics: undefined,
     createGame: undefined,
@@ -146,7 +158,7 @@ export const REQUEST_ROLE_REQUIREMENTS: Record<keyof HttpRequests, RoleRequireme
 }
 
 // Paths
-export const Paths: Record<keyof HttpRequests, string> = {
+export const Paths: Record<keyof HttpOperations, string> = {
     ping: "/",
     metrics: "/metrics",
     createGame: "/game",
