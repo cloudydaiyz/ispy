@@ -9,52 +9,57 @@ export type AppContext = {
     scheduler: SchedulerCtx,
 }
 
-export interface WebsocketModifyConnectionContext {
+// Operations that can be performed on websocket connections
+export interface WebsocketModifyConnection {
     setAuthenticated: (flag: boolean) => Promise<void>;
-    setViewingTaskInfo: (flag: boolean) => Promise<void>;
-    setViewingGameInfo: (flag: boolean) => Promise<void>;
-    setViewingGameHostInfo: (flag: boolean) => Promise<void>;
+    setTaskInfoView: (taskId?: string) => Promise<void>;
+    setViewGameInfo: (flag: boolean) => Promise<void>;
+    setViewGameHostInfo: (flag: boolean) => Promise<void>;
 }
 
 // Specific information about a webocket connection
-export interface WebsocketConnectionContext extends WebsocketModifyConnectionContext {
+export interface WebsocketConnection extends WebsocketModifyConnection {
     getUsername: () => string;
     getRole: () => Entities.UserRole;
+    // Specifies the ID of the task the user is viewing, if any
+    getTaskInfoView: () => string | undefined;
     isAuthenticated: () => boolean;
-    isViewingTaskInfo: () => boolean;
     isViewingGameInfo: () => boolean;
     isViewingGameHostInfo: () => boolean;
 }
 
+export type WebsocketTarget = string[] | Entities.UserRole | 'all';
+
 // Websocket requests that can be sent to client(s)
 // Setup on app setup
 export interface WebsocketOperationsContext extends Requests.WebsocketServerOperations {
-    // sets the target of the following request
-    // must be called before each websocket method (from `Requests.WebsocketServerOperations`)
-    to: (target: string[] | Entities.UserRole | 'all') => WebsocketOperationsContext;
-    // obtains information about websocket connections for the target
-    get: (target: string[] | Entities.UserRole | 'all') => WebsocketConnectionContext[];
-    // sets up a bulk operation that can be performed on the next call on the target
-    bulk: (target: string[] | Entities.UserRole | 'all') => WebsocketModifyConnectionContext;
-    // disconnects the connection with the target
-    disconnect: (target: string[] | Entities.UserRole | 'all') => void;
+    // Sets the target of the following request
+    // Must be called before each websocket method (from `Requests.WebsocketServerOperations`)
+    // Returns self to chain calls
+    to: (target: WebsocketTarget) => WebsocketOperationsContext;
+    // Obtains information about websocket connections for the target
+    get: (target: WebsocketTarget) => WebsocketConnection[];
+    // Sets up a bulk operation that can be performed on the target
+    bulk: (target: WebsocketTarget) => WebsocketModifyConnection;
+    // Disconnects the connection with the target
+    disconnect: (target: WebsocketTarget) => void;
 };
 
 export type CurrentRequest = {
     requestId: string;
-    // from user's access token, if any
+    // From user's access token, if any
     username?: string;
-    // user information, if retrieved from the db (usually to confirm role)
+    // User information, if retrieved from the db (usually to confirm role). Used if access token is provided.
     currentUser?: Entities.User;
-    // if the current request was sent through a websocket, information about the current connection
-    socket?: WebsocketConnectionContext;
+    // Information about the current connection if the current request was sent through a websocket
+    socket?: WebsocketConnection;
 }
 
 // Information about the current request that can be set/used in operations
 // Setup for each request when request is received
 export interface RequestContext {
-    setRequest(request: CurrentRequest): void;
-    getRequest(): CurrentRequest;
+    setRequest: (request: CurrentRequest) => void;
+    getRequest: () => CurrentRequest;
 }
 
 export type Context = {

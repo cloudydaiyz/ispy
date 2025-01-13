@@ -104,7 +104,12 @@ export async function viewPlayerInfo(ctx: Context, request: Entities.Username): 
 }
 
 export async function viewTaskInfo(ctx: Context, request: Entities.TaskId): Promise<Entities.PublicTask> {
-    const task = await ctx.app.db.gameStatsStore.readTask(request.taskId);
+    const gameStats = await ctx.app.db.gameStatsStore.readGameStats();
+    assert(gameStats.state == "running", "Game has not stared yet.");
+    
+    const task = gameStats.configuration.tasks.find(t => t.id == request.taskId);
+    assert(task, "Invalid task ID.");
+
     const publicTask = Entities.PublicTaskModel.parse(task);
     return publicTask;
 }
@@ -112,14 +117,17 @@ export async function viewTaskInfo(ctx: Context, request: Entities.TaskId): Prom
 export async function kickPlayer(ctx: Context, request: Entities.Username): Promise<void> {
     const user = await ctx.app.db.userStore.readUser(request.username);
     await dropUser(ctx, user);
+    ctx.sock.disconnect([request.username]);
 }
 
 export async function kickAllPlayers(ctx: Context): Promise<void> {
     await dropUsers(ctx, 'player');
+    ctx.sock.disconnect('player');
 }
 
 export async function viewGameInfo(ctx: Context): Promise<Entities.PublicGameStats> {
     const gameStats = await ctx.app.db.gameStatsStore.readGameStats();
+    assert(gameStats.state == "running", "Game has not stared yet.");
     const publicGameStats = Entities.PublicGameStatsModel.parse(gameStats);
     return publicGameStats;
 }

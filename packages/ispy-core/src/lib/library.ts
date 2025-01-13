@@ -1,10 +1,11 @@
 import { Entities, Requests } from "@cloudydaiyz/ispy-shared";
 import { Context } from "./context";
 import * as Operations from "./operations";
+import { PromisifyAll } from "../util";
 
 export interface Library {
     http: Requests.HttpOperations;
-    sock: Requests.WebsocketClientOperations;
+    sock: PromisifyAll<Requests.WebsocketClientOperations>;
 }
 
 export function createLibrary(ctx: Context): Library {
@@ -39,24 +40,13 @@ export function createLibrary(ctx: Context): Library {
             removeAdmin: (req: Entities.Username) => Operations.removeAdmin(ctx, req),
         },
         sock: {
-            authenticate: function (request: Entities.AccessToken): boolean {
-                throw new Error("Function not implemented.");
-            },
-            viewTaskInfo: function (request: Entities.TaskId): void {
-                throw new Error("Function not implemented.");
-            },
-            viewGameInfo: function (request: Entities.GameId): void {
-                throw new Error("Function not implemented.");
-            },
-            viewGameHostInfo: function (request: Entities.GameId): void {
-                throw new Error("Function not implemented.");
-            },
-            cancelViewTaskInfo: function (request: Entities.TaskId): void {
-                throw new Error("Function not implemented.");
-            },
-            cancelViewGameInfo: function (request: Entities.GameId): void {
-                throw new Error("Function not implemented.");
-            }
+            authenticate: (req: Entities.AccessToken) => Operations.Socket.authenticate(ctx, req),
+            startViewTaskInfo: (req: Entities.TaskId) => Operations.Socket.startViewTaskInfo(ctx, req),
+            stopViewTaskInfo: () => Operations.Socket.stopViewTaskInfo(ctx),
+            startViewGameInfo: () => Operations.Socket.startViewGameInfo(ctx),
+            stopViewGameInfo: () => Operations.Socket.stopViewGameInfo(ctx),
+            startViewGameHostInfo: () => Operations.Socket.startViewGameHostInfo(ctx),
+            stopViewGameHostInfo: () => Operations.Socket.stopViewGameHostInfo(ctx),
         }
     }
 }

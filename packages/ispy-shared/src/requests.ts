@@ -71,47 +71,51 @@ export interface HttpOperations {
 
 // Requests that can be sent from the client to the server
 export interface WebsocketClientOperations {
-    // authenticates the client; must be sent as the first request in
-    // connection within timeout, else the the client will be disconnected
-    authenticate: (request: Api.AccessToken) => boolean;
+    // Authenticates the client; must be sent as the first request in
+    // Connection within timeout, else the the client will be disconnected
+    authenticate: (request: Api.AccessToken) => void;
 
-    // initiates the retrieval of task info for player
-    viewTaskInfo: (request: Api.TaskId) => void;
+    // Initiates the retrieval of task info for player
+    // If another task is already being retrieved, that task will be replaced
+    startViewTaskInfo: (request: Api.TaskId) => void;
 
-    // cancels the retrieval of task info for player
-    cancelViewTaskInfo: (request: Api.TaskId) => void;
+    // Cancels the retrieval of task info for player
+    stopViewTaskInfo: () => void;
 
-    // initiates the retrieval of game info for player
-    viewGameInfo: (request: Api.GameId) => void;
+    // Initiates the retrieval of game info for player
+    startViewGameInfo: () => void;
 
-    // cancels the retrieval of game info for the player
-    cancelViewGameInfo: (request: Api.GameId) => void;
+    // Cancels the retrieval of game info for the player
+    stopViewGameInfo: () => void;
 
-    // initiates the retrieval of game info for host
-    viewGameHostInfo: (request: Api.GameId) => void;
+    // Initiates the retrieval of game info for host
+    startViewGameHostInfo: () => void;
+
+    // Cancels the retrieval of game info for the host
+    stopViewGameHostInfo: () => void;
 }
 
 // Requests that can be sent from the server to the client
 export interface WebsocketServerOperations {
-    // sent when authenticate is sent
+    // Sent when authenticate is sent
     authenticateAck: () => void;
-    // sent when viewTaskInfo is initially sent
-    // task info requests will be sent afterwards
+    // Sent when viewTaskInfo is initially sent
+    // Task info requests will be sent afterwards
     viewTaskInfoAck: (request: Api.PublicTask) => void;
-    // sent when task info changes
-    // success and fail values can change if they're scaled
+    // Sent when task info changes
+    // Success and fail values can change if they're scaled
     taskInfo: (request: Api.PublicTask) => void;
-    // sent when viewGameInfo is initially sent
+    // Sent when viewGameInfo is initially sent
     viewGameInfoAck: (request: Api.PublicGameStats) => void;
-    // sent when public game stats changes
-    // game state, start time, and end time can change
+    // Sent when public game stats changes
+    // Game state, start time, and end time can change
     gameInfo: (request: Api.PublicGameStats) => void;
-    // sent when viewGameHostInfo is initially sent
+    // Sent when viewGameHostInfo is initially sent
     viewGameHostInfoAck: (request: Api.Game) => void;
-    // sent when game changes
-    // game state, start time, end time, task info, and num players can change
+    // Sent when game changes
+    // Game state, start time, end time, task info, and num players can change
     gameHostInfo: (request: Api.Game) => void;
-    // sent when game ends; disconnected afterwards
+    // Sent when game ends; disconnected afterwards
     gameEnded: (request: Api.Game) => void;
 }
 
