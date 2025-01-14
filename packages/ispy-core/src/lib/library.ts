@@ -1,15 +1,19 @@
 import { Entities, Requests } from "@cloudydaiyz/ispy-shared";
-import { Context } from "./context";
+import { Context, SetRequest } from "./context";
 import * as Operations from "./operations";
 import { PromisifyAll } from "../util";
 
 export interface Library {
+    request: { set: SetRequest };
     http: Requests.HttpOperations;
     sock: PromisifyAll<Requests.WebsocketClientOperations>;
 }
 
 export function createLibrary(ctx: Context): Library {
     return {
+        request: {
+            set: ctx.req.setRequest
+        },
         http: {
             ping: async () => {},
             metrics: () => Operations.metrics(ctx),
@@ -41,12 +45,10 @@ export function createLibrary(ctx: Context): Library {
         },
         sock: {
             authenticate: (req: Entities.AccessToken) => Operations.Socket.authenticate(ctx, req),
-            startViewTaskInfo: (req: Entities.TaskId) => Operations.Socket.startViewTaskInfo(ctx, req),
-            stopViewTaskInfo: () => Operations.Socket.stopViewTaskInfo(ctx),
             startViewGameInfo: () => Operations.Socket.startViewGameInfo(ctx),
             stopViewGameInfo: () => Operations.Socket.stopViewGameInfo(ctx),
             startViewGameHostInfo: () => Operations.Socket.startViewGameHostInfo(ctx),
             stopViewGameHostInfo: () => Operations.Socket.stopViewGameHostInfo(ctx),
-        }
+        },
     }
 }

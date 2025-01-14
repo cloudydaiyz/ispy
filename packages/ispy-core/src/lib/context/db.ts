@@ -17,12 +17,13 @@ interface GameStatsStore {
     readGameConfig: () => Promise<Entities.GameConfiguration>;
     readTask: (taskId: string) => Promise<Entities.Task>;
     isGameLocked: () => Promise<boolean>;
+    createGameStats: (props: Entities.GameStats) => Promise<void>;
     writeGameStats: (props: Partial<Entities.GameStats>) => Promise<void>;
     dropGameStats: () => Promise<void>;
 }
 
 // redis sorted set
-type LeaderboardInfo = Entities.LeaderboardEntry & { ranking: number };
+export type LeaderboardInfo = Entities.LeaderboardEntry & { ranking: number };
 interface LeaderboardStore {
     readLeaderboard: () => Promise<Entities.LeaderboardEntry[]>;
     getPlayerInfo: (username: string) => Promise<LeaderboardInfo>;
@@ -60,6 +61,7 @@ interface AdminStore {
 // serialize responses in task submission to a string
 interface PlayerStore {
     readPlayer: (username: string) => Promise<Entities.EnhancedPlayer>;
+    createPlayer: (username: string, props: Entities.EnhancedPlayer) => Promise<void>;
     writePlayer: (username: string, props: Partial<Entities.EnhancedPlayer>) => Promise<void>;
     dropPlayer: (username: string) => Promise<void>;
     pushTaskSubmission: (username: string, props: Entities.TaskSubmission) => Promise<void>;
@@ -82,12 +84,12 @@ interface AppMetricsStore {
 interface AppStore {
     // Watches the keys used in subsequent calls to the database up until
     // `commitTransaction` is called. Only available in Redis adapter
-    startWatch?: () => Promise<void>;
-    startTransaction: () => Promise<void>;
-    commitTransaction: () => Promise<void>;
+    // startWatch?: () => Promise<void>;
+    // startTransaction: () => Promise<void>;
+    // commitTransaction: () => Promise<void>;
     // Cancel, but not roll back, the transaction
     // https://redis.io/docs/latest/develop/interact/transactions/#what-about-rollbacks
-    cancelTransaction: () => Promise<void>;
+    // cancelTransaction: () => Promise<void>;
 }
 
 export type DatabaseCtx = {

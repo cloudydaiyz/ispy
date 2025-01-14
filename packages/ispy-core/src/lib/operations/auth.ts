@@ -97,8 +97,8 @@ export async function createGame(ctx: Context, request: Requests.CreateGameReque
         completed: false,
     }
     await ctx.app.db.gameStatsStore.writeGameStats(gameStats);
-
-    await ctx.app.scheduler.schedule("startGame", new Date(request.config.startTime), SCHEDULED_FUNCTION_NAME);
+    await ctx.app.scheduler.schedule("start-game", new Date(request.config.startTime), "ispy-start-game");
+    await ctx.app.scheduler.schedule("end-game", new Date(request.config.endTime), "ispy-end-game");
 
     const accessToken = jwt.sign({ user: request.hostUsername, role: "host" }, ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
     const refreshToken = jwt.sign({ user: request.hostUsername, role: "host" }, REFRESH_TOKEN_SECRET, { expiresIn: '2h' });

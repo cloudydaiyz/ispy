@@ -75,13 +75,6 @@ export interface WebsocketClientOperations {
     // Connection within timeout, else the the client will be disconnected
     authenticate: (request: Api.AccessToken) => void;
 
-    // Initiates the retrieval of task info for player
-    // If another task is already being retrieved, that task will be replaced
-    startViewTaskInfo: (request: Api.TaskId) => void;
-
-    // Cancels the retrieval of task info for player
-    stopViewTaskInfo: () => void;
-
     // Initiates the retrieval of game info for player
     startViewGameInfo: () => void;
 
@@ -99,12 +92,6 @@ export interface WebsocketClientOperations {
 export interface WebsocketServerOperations {
     // Sent when authenticate is sent
     authenticateAck: () => void;
-    // Sent when viewTaskInfo is initially sent
-    // Task info requests will be sent afterwards
-    viewTaskInfoAck: (request: Api.PublicTask) => void;
-    // Sent when task info changes
-    // Success and fail values can change if they're scaled
-    taskInfo: (request: Api.PublicTask) => void;
     // Sent when viewGameInfo is initially sent
     viewGameInfoAck: (request: Api.PublicGameStats) => void;
     // Sent when public game stats changes

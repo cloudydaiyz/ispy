@@ -1,5 +1,5 @@
-import { Entities, Requests } from "@cloudydaiyz/ispy-shared";
-import { Context, WebsocketTarget } from "../context";
+import { Entities } from "@cloudydaiyz/ispy-shared";
+import { Context } from "../context";
 import * as Auth from "./auth";
 import * as Game from "./game";
 
@@ -12,21 +12,6 @@ export async function authenticate(ctx: Context, request: Entities.AccessToken):
 
     socket!.setAuthenticated(true);
     ctx.sock.to([username!]).authenticateAck();
-}
-
-export async function startViewTaskInfo(ctx: Context, request: Entities.TaskId): Promise<void> {
-    const { username, socket } = ctx.req.getRequest();
-    if(!socket!.isAuthenticated()) return;
-
-    socket!.setTaskInfoView(request.taskId);
-    const taskInfo = await Game.viewTaskInfo(ctx, request);
-    ctx.sock.to([username!]).viewTaskInfoAck(taskInfo);
-}
-
-export async function stopViewTaskInfo(ctx: Context): Promise<void> {
-    const { socket } = ctx.req.getRequest();
-    if(!socket!.isAuthenticated()) return;
-    socket!.setTaskInfoView();
 }
 
 export async function startViewGameInfo(ctx: Context): Promise<void> {

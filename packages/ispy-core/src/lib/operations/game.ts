@@ -1,5 +1,5 @@
 import { Entities, Requests } from "@cloudydaiyz/ispy-shared";
-import { Context } from "../context";
+import { Context, } from "../context";
 import { getCurrentPointValue } from "../../util";
 import { dropUser, dropUsers } from "./helper";
 import assert from "assert";
@@ -94,9 +94,14 @@ export async function submitTask(ctx: Context, request: Requests.SubmitTaskReque
 export async function startGame(ctx: Context): Promise<void> {
     const { gameStatsStore, appMetricsStore } = ctx.app.db;
     const stats = await gameStatsStore.readGameStats();
-    assert(stats.state == 'ready', "Unable to start game. The game is not in a ready state.");
-    await gameStatsStore.writeGameStats({ state: 'running', startTime: Date.now() });
-    await appMetricsStore.writeAppMetrics({ gameState: 'running' });
+    assert(stats.state == "ready", "Unable to start game. The game is not in a ready state.");
+
+    await gameStatsStore.writeGameStats({ state: "running", startTime: Date.now() });
+    await appMetricsStore.writeAppMetrics({ gameState: "running" });
+
+    if(!ctx.req.getRequest().scheduled) {
+        await ctx.app.scheduler.cancelSchedule("start-game");
+    }
 }
 
 export async function viewPlayerInfo(ctx: Context, request: Entities.Username): Promise<Entities.EnhancedPlayer> {
@@ -121,8 +126,8 @@ export async function kickPlayer(ctx: Context, request: Entities.Username): Prom
 }
 
 export async function kickAllPlayers(ctx: Context): Promise<void> {
-    await dropUsers(ctx, 'player');
-    ctx.sock.disconnect('player');
+    await dropUsers(ctx, "player");
+    ctx.sock.disconnect("player");
 }
 
 export async function viewGameInfo(ctx: Context): Promise<Entities.PublicGameStats> {
@@ -151,9 +156,11 @@ export async function viewGameHostInfo(ctx: Context): Promise<Entities.Game> {
 }
 
 export async function endGame(ctx: Context): Promise<void> {
-    const game = await viewGameHostInfo(ctx);
-
     const db = ctx.app.db;
+    const stats = await db.gameStatsStore.readGameStats();
+    assert(stats.state == "running", "Unable to end game. The game is not already running.");
+
+    const game = await viewGameHostInfo(ctx);
     await db.gameHistoryStore.pushGame(game);
     await db.gameStatsStore.dropGameStats();
     await db.leaderboardStore.dropLeaderboard();
@@ -166,7 +173,12 @@ export async function endGame(ctx: Context): Promise<void> {
         gameState: "no-game",
         gameLocked: true,
     });
+    ctx.sock.to('all').gameEnded(game);
     ctx.sock.disconnect('all');
+
+    if(!ctx.req.getRequest().scheduled) {
+        await ctx.app.scheduler.cancelSchedule("end-game");
+    }
 }
 
 export async function removeAdmin(ctx: Context, request: Entities.Username): Promise<void> {

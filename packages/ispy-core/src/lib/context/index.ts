@@ -1,6 +1,15 @@
-import { Entities, Requests } from "@cloudydaiyz/ispy-shared";
+import { PartialAll } from "../../util";
 import { DatabaseCtx } from "./db"
 import { SchedulerCtx } from "./scheduler";
+import { RequestContext } from "./request";
+import { WebsocketOperationsContext } from "./websocket";
+import assert from "assert";
+
+export * from "./db";
+export * from "./files";
+export * from "./scheduler";
+export * from "./websocket";
+export * from "./request";
 
 // Interaction between the app and its infrastructure
 // Setup on app setup
@@ -9,61 +18,36 @@ export type AppContext = {
     scheduler: SchedulerCtx,
 }
 
-// Operations that can be performed on websocket connections
-export interface WebsocketModifyConnection {
-    setAuthenticated: (flag: boolean) => Promise<void>;
-    setTaskInfoView: (taskId?: string) => Promise<void>;
-    setViewGameInfo: (flag: boolean) => Promise<void>;
-    setViewGameHostInfo: (flag: boolean) => Promise<void>;
-}
+// Even if not explicitly assigned, all operation functions satisfy this type
+export type Operation<I, O> = (c: Context, input: I) => Promise<O>;
 
-// Specific information about a webocket connection
-export interface WebsocketConnection extends WebsocketModifyConnection {
-    getUsername: () => string;
-    getRole: () => Entities.UserRole;
-    // Specifies the ID of the task the user is viewing, if any
-    getTaskInfoView: () => string | undefined;
-    isAuthenticated: () => boolean;
-    isViewingGameInfo: () => boolean;
-    isViewingGameHostInfo: () => boolean;
-}
-
-export type WebsocketTarget = string[] | Entities.UserRole | 'all';
-
-// Websocket requests that can be sent to client(s)
-// Setup on app setup
-export interface WebsocketOperationsContext extends Requests.WebsocketServerOperations {
-    // Sets the target of the following request
-    // Must be called before each websocket method (from `Requests.WebsocketServerOperations`)
-    // Returns self to chain calls
-    to: (target: WebsocketTarget) => WebsocketOperationsContext;
-    // Obtains information about websocket connections for the target
-    get: (target: WebsocketTarget) => WebsocketConnection[];
-    // Sets up a bulk operation that can be performed on the target
-    bulk: (target: WebsocketTarget) => WebsocketModifyConnection;
-    // Disconnects the connection with the target
-    disconnect: (target: WebsocketTarget) => void;
-};
-
-export type CurrentRequest = {
-    requestId: string;
-    // From user's access token, if any
-    username?: string;
-    // User information, if retrieved from the db (usually to confirm role). Used if access token is provided.
-    currentUser?: Entities.User;
-    // Information about the current connection if the current request was sent through a websocket
-    socket?: WebsocketConnection;
-}
-
-// Information about the current request that can be set/used in operations
-// Setup for each request when request is received
-export interface RequestContext {
-    setRequest: (request: CurrentRequest) => void;
-    getRequest: () => CurrentRequest;
-}
-
-export type Context = {
+// Portion of the context defined once per app, globally
+export type GlobalContext = {
     app: AppContext,
     sock: WebsocketOperationsContext,
+}
+
+// Portion of the context defined once per request
+export type Context = GlobalContext & {
     req: RequestContext,
 };
+
+export type ContextAdapter = (c: PartialAll<GlobalContext>) => Promise<void>;
+
+// Merges all partial adapters into a complete adapter
+export async function mergeAdapters(adapters: ContextAdapter[]): Promise<GlobalContext> {
+    const ctx: PartialAll<Context> = { app: undefined };
+    adapters.forEach(async (adapter) => await adapter(ctx));
+
+    // Check that all members are initialized
+    const toCheck: any[] = Object.keys(ctx).map(k => ctx[k as keyof typeof ctx]);
+    for(let i = 0; i < toCheck.length; i++) {
+        const ctxMember = toCheck[i];
+        assert(ctxMember, 'All members not initialized');
+        if(ctxMember instanceof Object) {
+            const additionalMembers = Object.keys(ctxMember).map(k => ctxMember[k as keyof typeof ctxMember])
+            toCheck.push(...additionalMembers);
+        }
+    }
+    return ctx as GlobalContext;
+}

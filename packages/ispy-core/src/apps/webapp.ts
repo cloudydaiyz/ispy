@@ -1,7 +1,7 @@
-import { binding as expressBind } from "../bindings/express-bind";
+import { binding as bindExpress } from "../bindings/express-bind";
 
 async function main() {
-    expressBind();
+    bindExpress();
 }
 
 main();
