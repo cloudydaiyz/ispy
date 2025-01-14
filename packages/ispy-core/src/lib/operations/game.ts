@@ -27,14 +27,14 @@ export async function exportGamePdf(ctx: Context): Promise<Entities.GameExport> 
 }
 
 export async function leaveGame(ctx: Context, request: Entities.Username): Promise<void> {
-    const user = ctx.req.getRequest().currentUser!;
+    const user = ctx.local!.req.currentUser!;
     await dropUser(ctx, user);
     ctx.sock.disconnect([request.username]);
 }
 
 export async function submitTask(ctx: Context, request: Requests.SubmitTaskRequest): Promise<Entities.TaskSubmission> {
     const { gameStatsStore, leaderboardStore, playerStore } = ctx.app.db;
-    const username = ctx.req.getRequest().username;
+    const username = ctx.local!.req.username;
     const stats = await gameStatsStore.readGameStats();
     const statsUpdate: Partial<Entities.GameStats> = {};
     assert(stats.state == "running", "Cannot submit task. The game hasn't started yet.");
@@ -99,7 +99,7 @@ export async function startGame(ctx: Context): Promise<void> {
     await gameStatsStore.writeGameStats({ state: "running", startTime: Date.now() });
     await appMetricsStore.writeAppMetrics({ gameState: "running" });
 
-    if(!ctx.req.getRequest().scheduled) {
+    if(!ctx.local!.req.scheduled) {
         await ctx.app.scheduler.cancelSchedule("start-game");
     }
 }
@@ -176,7 +176,7 @@ export async function endGame(ctx: Context): Promise<void> {
     ctx.sock.to('all').gameEnded(game);
     ctx.sock.disconnect('all');
 
-    if(!ctx.req.getRequest().scheduled) {
+    if(!ctx.local!.req.scheduled) {
         await ctx.app.scheduler.cancelSchedule("end-game");
     }
 }

@@ -25,6 +25,7 @@
     "@types/express-ws": "^3.0.5",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^22.10.5",
+    "@types/node-schedule": "^2.1.7",
     "bcrypt": "^5.1.1"
   }
 }

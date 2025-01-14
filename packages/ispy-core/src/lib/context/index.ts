@@ -1,7 +1,7 @@
 import { PartialAll } from "../../util";
 import { DatabaseCtx } from "./db"
 import { SchedulerCtx } from "./scheduler";
-import { RequestContext } from "./request";
+import { CurrentRequest } from "./request";
 import { WebsocketOperationsContext } from "./websocket";
 import assert from "assert";
 
@@ -28,9 +28,12 @@ export type GlobalContext = {
 }
 
 // Portion of the context defined once per request
-export type Context = GlobalContext & {
-    req: RequestContext,
-};
+export type LocalContext = {
+    readonly req: CurrentRequest,
+}
+
+// Global context is defined initially, and local context is lazily defined during request
+export type Context = GlobalContext & { local?: LocalContext };
 
 export type ContextAdapter = (c: PartialAll<GlobalContext>) => Promise<void>;
 

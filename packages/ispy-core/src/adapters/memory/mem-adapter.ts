@@ -18,7 +18,7 @@ export async function $scheduleAdapter(): Promise<ContextAdapter> {
 
 export async function $fileAdapter(): Promise<ContextAdapter> {
     return async function adapter(c: PartialAll<GlobalContext>) {
-        
+    
     }
 }
 

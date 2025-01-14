@@ -50,5 +50,5 @@ export interface WebsocketOperationsContext extends Requests.WebsocketServerOper
     // Sets up a bulk operation that can be performed on the target
     modify: () => ModifyWebsocketConnection;
     // Disconnects the connection with the target
-    disconnect: () => void;
+    disconnect: (target: WebsocketTarget) => void;
 };

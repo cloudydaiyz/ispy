@@ -31,9 +31,9 @@ export async function refreshCredentials(ctx: Context, request: Entities.Refresh
 }
 
 export async function joinGame(ctx: Context, request: Entities.BasicAuth): Promise<Entities.BearerAuth> {
-    const { gameStatsStore, userStore, leaderboardStore, adminStore } = ctx.app.db;
-    const gameLocked = await gameStatsStore.isGameLocked();
-    assert(!gameLocked, "This game is currently locked. You are unable to join.");
+    const { gameStatsStore, userStore, leaderboardStore, adminStore, playerStore } = ctx.app.db;
+    const stats = await gameStatsStore.readGameStats();
+    assert(!stats.locked, "This game is currently locked. You are unable to join.");
 
     const username = request.username;
     const password = await bcrypt.hash(request.password, AUTH_SALT_ROUNDS);
@@ -42,6 +42,14 @@ export async function joinGame(ctx: Context, request: Entities.BasicAuth): Promi
     const user = userStore.readOptionalUser(username);
     assert(!user, "User already exists.");
 
+    const userId = (new ObjectID()).toHexString();
+    await userStore.writeUser(request.username, {
+        id: userId,
+        username,
+        password,
+        role,
+    });
+
     const admin = await adminStore.readOptionalAdmin(username);
     if(admin) {
         role = 'admin';
@@ -49,16 +57,19 @@ export async function joinGame(ctx: Context, request: Entities.BasicAuth): Promi
 
         const adminPass = await bcrypt.hash(admin.password, AUTH_SALT_ROUNDS);
         assert(password == adminPass, "Invalid credentials.");
+
+        await adminStore.writeAdmin(username, { userId });
     } else {
+        assert(stats.players.length < stats.configuration.maxPlayers, "Max players reached for this game.");
+        await playerStore.createPlayer(username, {
+            username,
+            completed: false,
+            points: 0,
+            ranking: 0,
+            tasksSubmitted: []
+        });
         await leaderboardStore.newPlayer(request.username);
     }
-
-    await userStore.writeUser(request.username, {
-        id: (new ObjectID()).toHexString(),
-        username,
-        password,
-        role,
-    });
 
     const accessToken = jwt.sign({ user: request.username, role: "player" }, ACCESS_TOKEN_SECRET!, { expiresIn: '1h' });
     const refreshToken = jwt.sign({ user: request.username, role: "player" }, REFRESH_TOKEN_SECRET!, { expiresIn: '2h' });
@@ -96,9 +107,9 @@ export async function createGame(ctx: Context, request: Requests.CreateGameReque
         playersCompleted: 0,
         completed: false,
     }
-    await ctx.app.db.gameStatsStore.writeGameStats(gameStats);
-    await ctx.app.scheduler.schedule("start-game", new Date(request.config.startTime), "ispy-start-game");
-    await ctx.app.scheduler.schedule("end-game", new Date(request.config.endTime), "ispy-end-game");
+    await ctx.app.db.gameStatsStore.createGameStats(gameStats);
+    await ctx.app.scheduler.schedule("start-game", new Date(request.config.startTime));
+    await ctx.app.scheduler.schedule("end-game", new Date(request.config.endTime));
 
     const accessToken = jwt.sign({ user: request.hostUsername, role: "host" }, ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
     const refreshToken = jwt.sign({ user: request.hostUsername, role: "host" }, REFRESH_TOKEN_SECRET, { expiresIn: '2h' });

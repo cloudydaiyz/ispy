@@ -6,7 +6,7 @@ import * as Game from "./game";
 // == RECEIVING OPERATIONS == //
 
 export async function authenticate(ctx: Context, request: Entities.AccessToken): Promise<void> {
-    const { username, socket } = ctx.req.getRequest();
+    const { username, socket } = ctx.local!.req;
     const success = await Auth.authenticate(ctx, request);
     if(!success) return;
 
@@ -15,7 +15,7 @@ export async function authenticate(ctx: Context, request: Entities.AccessToken):
 }
 
 export async function startViewGameInfo(ctx: Context): Promise<void> {
-    const { username, socket } = ctx.req.getRequest();
+    const { username, socket } = ctx.local!.req;
     if(!socket!.isAuthenticated()) return;
 
     socket!.setViewGameInfo(true);
@@ -24,13 +24,13 @@ export async function startViewGameInfo(ctx: Context): Promise<void> {
 }
 
 export async function stopViewGameInfo(ctx: Context): Promise<void> {
-    const { socket } = ctx.req.getRequest();
+    const { socket } = ctx.local!.req;
     if(!socket!.isAuthenticated()) return;
     socket!.setViewGameInfo(false);
 }
 
 export async function startViewGameHostInfo(ctx: Context): Promise<void> {
-    const { username, socket } = ctx.req.getRequest();
+    const { username, socket } = ctx.local!.req;
     if(!socket!.isAuthenticated()) return;
 
     socket!.setViewGameInfo(true);
@@ -39,7 +39,7 @@ export async function startViewGameHostInfo(ctx: Context): Promise<void> {
 }
 
 export async function stopViewGameHostInfo(ctx: Context): Promise<void> {
-    const { socket } = ctx.req.getRequest();
+    const { socket } = ctx.local!.req;
     if(!socket!.isAuthenticated()) return;
     socket!.setViewGameHostInfo(false);
 }

@@ -32,7 +32,8 @@ function sendToTargets(payload: Requests.WebsocketRequest, connections: Websocke
 // immutable implementation for websocket operations
 // private constructor w/ target set
 class WebsocketOperator implements WebsocketOperationsContext {
-    private target?: WebsocketTarget;
+    private readonly target?: WebsocketTarget;
+
     constructor(target?: WebsocketTarget) {
         this.target = target;
     }
@@ -46,9 +47,8 @@ class WebsocketOperator implements WebsocketOperationsContext {
         connections.push(target);
     };
 
-    disconnect(): void {
-        assert(this.target, "No target currently set.");
-        const matched = getTargets(connections, this.target);
+    disconnect(target: WebsocketTarget): void {
+        const matched = getTargets(connections, target);
         matched.forEach(c => c.ws.disconnect());
     };
 
