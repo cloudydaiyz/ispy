@@ -117,8 +117,10 @@ export const WebsocketRequestModel = z.object({
 export type WebsocketRequest = z.infer<typeof WebsocketRequestModel>;
 
 // Access role requirements for requests
+// - `player-self`: The request can be made if the requester and the target of the request is the same player
+// - `admin-self`: The request can be made if the requester and the target of the request is the same admin
 export type RoleRequirement = Api.UserRole | 'player-self' | 'admin-self';
-export const REQUEST_ROLE_REQUIREMENTS: Record<keyof HttpOperations, RoleRequirement[] | undefined> = {
+export const REQUEST_ROLE_REQUIREMENTS: Record<keyof HttpOperations | keyof WebsocketClientOperations, RoleRequirement[] | undefined> = {
     ping: undefined,
     metrics: undefined,
     createGame: undefined,
@@ -135,6 +137,8 @@ export const REQUEST_ROLE_REQUIREMENTS: Record<keyof HttpOperations, RoleRequire
     viewPlayerInfo: ["host", "admin", "player-self"],
     viewTaskInfo: ["player"],
     viewGameInfo: ["player"],
+    startViewGameInfo: ["player"],
+    stopViewGameInfo: ["player"],
 
     startGame: ["host", "admin"],
     kickPlayer: ["host", "admin"],
@@ -143,6 +147,8 @@ export const REQUEST_ROLE_REQUIREMENTS: Record<keyof HttpOperations, RoleRequire
     unlockGame: ["host", "admin"],
     viewTaskHostInfo: ["host", "admin"],
     viewGameHostInfo: ["host", "admin"],
+    startViewGameHostInfo: ["host", "admin"],
+    stopViewGameHostInfo: ["host", "admin"],
 
     removeAdmin: ["host"],
     endGame: ["host"],

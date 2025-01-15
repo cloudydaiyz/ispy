@@ -1,5 +1,5 @@
 import { Entities, Requests } from "@cloudydaiyz/ispy-shared";
-import { Context, GlobalContext, LocalContext } from "./context";
+import { Context, GlobalContext, LocalContext, ModifyWebsocketConnection, ReadWebsocketConnection } from "./context";
 import * as Operations from "./operations";
 import { PromisifyAll } from "../util";
 
@@ -45,29 +45,42 @@ function sockOperations(ctx: Context): PromisifyAll<Requests.WebsocketClientOper
     }
 }
 
+function localOperations(ctx: Context): LocalRequests {
+    return {
+        getCurrentUser: (username: string) => ctx.app.db.userStore.readUser(username),
+        getCurrentWs: async (username: string) => ctx.sock.get(username),
+    }
+}
+
+interface LocalRequests {
+    getCurrentUser: (username: string) => Promise<Entities.User>;
+    getCurrentWs: (username: string) => Promise<ReadWebsocketConnection & ModifyWebsocketConnection>;
+}
+
 export interface Library {
     boot: () => Promise<void>;
     shutdown: () => Promise<void>;
     http: Requests.HttpOperations;
     sock: PromisifyAll<Requests.WebsocketClientOperations>;
+    local: LocalRequests;
 }
 
 export class Library {
     private readonly ctx: Context;
 
-    constructor(globalCtx: GlobalContext) {
-        const ctx: Context = { ...globalCtx };
+    constructor(globalCtx: GlobalContext, localCtx?: LocalContext) {
+        const ctx: Context = { ...globalCtx, local: localCtx };
 
         this.boot = async () => {},
         this.shutdown = async () => {},
         this.http = httpOperations(ctx);
         this.sock = sockOperations(ctx);
+        this.local = localOperations(ctx);
         this.ctx = ctx;
     }
 
-    addLocal(localCtx: LocalContext): Library {
-        this.ctx.local = localCtx;
-        return this;
+    withLocalCtx(localCtx: LocalContext): Library {
+        return new Library(this.ctx, localCtx);
     }
 }
 

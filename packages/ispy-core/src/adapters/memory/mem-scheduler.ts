@@ -1,5 +1,6 @@
-import assert from "assert";
 import { ScheduledJob, SchedulerCtx } from "../../lib/context";
+
+import assert from "assert";
 import scheduler from "node-schedule";
 
 const jobOperations: Record<string, () => Promise<void>> = {};
@@ -15,7 +16,7 @@ const schedule = async (jobName: ScheduledJob, time: Date): Promise<void> => {
         activeJobs[jobName].reschedule(time);
         return;
     }
-    
+
     const onInvoke = () => jobOperations[jobName]().then(() => { delete activeJobs[jobName] });
     const job = scheduler.scheduleJob(time, onInvoke);
     activeJobs[jobName] = job;

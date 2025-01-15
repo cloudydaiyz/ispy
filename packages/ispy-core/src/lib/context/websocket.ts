@@ -49,6 +49,8 @@ export interface WebsocketOperationsContext extends Requests.WebsocketServerOper
     read: () => ReadWebsocketConnection[];
     // Sets up a bulk operation that can be performed on the target
     modify: () => ModifyWebsocketConnection;
+    // Obtains read & write information for the given user
+    get: (username: string) => ReadWebsocketConnection & ModifyWebsocketConnection;
     // Disconnects the connection with the target
     disconnect: (target: WebsocketTarget) => void;
 };

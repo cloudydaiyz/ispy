@@ -29,14 +29,19 @@ function sendToTargets(payload: Requests.WebsocketRequest, connections: Websocke
     matched.forEach(c => c.ws.send(JSON.stringify(payload)));
 }
 
-// immutable implementation for websocket operations
-// private constructor w/ target set
+// Immutable implementation for in-memory websocket operations
 class WebsocketOperator implements WebsocketOperationsContext {
     private readonly target?: WebsocketTarget;
 
     constructor(target?: WebsocketTarget) {
         this.target = target;
     }
+
+    get(username: string): ReadWebsocketConnection & ModifyWebsocketConnection {
+        const [ read ] = this.read(username);
+        const modify = this.modify(username);
+        return { ...read, ...modify };
+    };
 
     to(target: WebsocketTarget): WebsocketOperationsContext {
         return new WebsocketOperator(target);
@@ -52,9 +57,10 @@ class WebsocketOperator implements WebsocketOperationsContext {
         matched.forEach(c => c.ws.disconnect());
     };
 
-    read(): ReadWebsocketConnection[] {
-        assert(this.target, "No target currently set.");
-        const matched = getTargets(connections, this.target);
+    read(username?: string): ReadWebsocketConnection[] {
+        const target = username ? [username] : this.target;
+        assert(target, "No target currently set.");
+        const matched = getTargets(connections, target);
         return matched.map(m => ({
             getUsername: () => m.username,
             getRole: () => m.role,
@@ -65,9 +71,10 @@ class WebsocketOperator implements WebsocketOperationsContext {
         }));
     };
 
-    modify(): ModifyWebsocketConnection {
-        assert(this.target, "No target currently set.");
-        const matched = getTargets(connections, this.target);
+    modify(username?: string): ModifyWebsocketConnection {
+        const target = username ? [username] : this.target;
+        assert(target, "No target currently set.");
+        const matched = getTargets(connections, target);
         return {
             setAuthenticated: async (flag: boolean) => { matched.forEach(m => { m.isAuthenticated = flag } ) },
             setTaskInfoView: async (taskId?: string) => { matched.forEach(m => { m.taskInfoView = taskId } ) },

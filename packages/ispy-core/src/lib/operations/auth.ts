@@ -1,14 +1,13 @@
 import { Context } from "../context";
 import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET, SCHEDULED_FUNCTION_NAME } from "../../env";
 import { AUTH_SALT_ROUNDS } from "../../constants";
+import { AuthJwtPayload } from "../../util";
 
 import { Entities, Requests } from "@cloudydaiyz/ispy-shared";
-import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 import ObjectID from "bson-objectid";
 import assert from "assert";
-
-type AuthJwtPayload = { user: string, role: Entities.UserRole };
 
 export async function authenticate(ctx: Context, request: Entities.AccessToken): Promise<boolean> {
     try {

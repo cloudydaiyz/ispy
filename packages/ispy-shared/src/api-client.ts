@@ -24,7 +24,6 @@ export class ApiClient implements Requests.HttpOperations {
             const password = request.data.password;
             const accessToken = request.data.accessToken;
             const refreshToken = request.data.refreshToken;
-
             let authCount = 0;
 
             // Basic authentication

@@ -3,6 +3,7 @@ import { PartialAll } from "../../util";
 
 import MemDb from "./mem-db";
 import MemWs from "./mem-ws";
+import MemScheduler from "./mem-scheduler";
 
 export async function $dbAdapter(): Promise<ContextAdapter> {
     return async function adapter(c: PartialAll<GlobalContext>) {
@@ -12,7 +13,7 @@ export async function $dbAdapter(): Promise<ContextAdapter> {
 
 export async function $scheduleAdapter(): Promise<ContextAdapter> {
     return async function adapter(c: PartialAll<GlobalContext>) {
-        c.app ? c.app.scheduler = undefined : c.app = { scheduler: undefined };
+        c.app ? c.app.scheduler = MemScheduler : c.app = { scheduler: MemScheduler };
     }
 }
 
@@ -28,7 +29,7 @@ export async function $websocketAdapter(): Promise<ContextAdapter> {
     }
 }
 
-export async function $allAdapter(): Promise<ContextAdapter> {
+export async function $fullAdapter(): Promise<ContextAdapter> {
     const adapters = await Promise.all([
         $dbAdapter(),
         $scheduleAdapter(),
