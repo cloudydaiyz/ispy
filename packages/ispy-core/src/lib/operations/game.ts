@@ -13,8 +13,8 @@ export async function getGameState(ctx: Context): Promise<Entities.GameState> {
     return stats.state;
 }
 
-export async function validateGame(ctx: Context, request: Entities.GameConfiguration): Promise<boolean> {
-    return true;
+export async function validateGame(ctx: Context, request: Entities.GameConfiguration): Promise<Requests.ValidateResponse> {
+    return { valid: true };
 }
 
 export async function getGameHistory(ctx: Context): Promise<Entities.GameHistory> {

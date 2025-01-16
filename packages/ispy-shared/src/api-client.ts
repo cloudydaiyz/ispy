@@ -139,12 +139,13 @@ export class ApiClient implements Requests.HttpOperations {
         .then(r => { this.setCredentials(r.data); return r.data });
     getGameState = async () => this.axios.get(Paths.getGameState).then(r => r.data);
     validateGame = async (request: Api.GameConfiguration) => {
+        let valid = true;
         try {
             await this.axios.post(Paths.validateGame, request);
         } catch {
-            return false;
+            valid = false;
         }
-        return true;
+        return { valid };
     }
     getGameHistory = () => this.axios.get(Paths.getGameHistory).then(r => r.data);
     exportGamePdf = () => this.axios.post(Paths.exportGamePdf).then(r => r.data);

@@ -9,12 +9,12 @@ import bcrypt from "bcrypt";
 import ObjectID from "bson-objectid";
 import assert from "assert";
 
-export async function authenticate(ctx: Context, request: Entities.AccessToken): Promise<boolean> {
+export async function authenticate(ctx: Context, request: Entities.AccessToken): Promise<Requests.ValidateResponse> {
     try {
         jwt.verify(request.accessToken, ACCESS_TOKEN_SECRET);
-        return true;
+        return { valid: true };
     } catch {
-        return false;
+        return { valid: false };
     }
 }
 

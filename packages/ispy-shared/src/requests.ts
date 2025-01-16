@@ -22,6 +22,12 @@ export type SubmitTaskRequest = z.infer<typeof SubmitTaskRequestModel>;
 
 // == Responses == //
 
+export const ValidateResponseModel = z.object({
+    valid: z.boolean(),
+})
+
+export type ValidateResponse = z.infer<typeof ValidateResponseModel>;
+
 // Error
 // ZodError | InvalidInputError
 // InvalidStateError
@@ -44,11 +50,11 @@ export interface HttpOperations {
     metrics: () => Promise<Api.AppMetrics>;
     createGame: (request: CreateGameRequest) => Promise<Api.BearerAuth>;
     getGameState: () => Promise<Api.GameState>;
-    validateGame: (request: Api.GameConfiguration) => Promise<boolean>;
+    validateGame: (request: Api.GameConfiguration) => Promise<ValidateResponse>;
     getGameHistory: () => Promise<Api.GameHistory>;
     exportGamePdf: () => Promise<Api.GameExport>;
     joinGame: (request: Api.BasicAuth) => Promise<Api.BearerAuth>;
-    authenticate: (request: Api.AccessToken) => Promise<boolean>;
+    authenticate: (request: Api.AccessToken) => Promise<ValidateResponse>;
     refreshCredentials: (request: Api.RefreshToken) => Promise<Api.BearerAuth>;
 
     leaveGame: (request: Api.Username) => Promise<void>;
@@ -115,6 +121,37 @@ export const WebsocketRequestModel = z.object({
     payload: z.record(z.string(), z.any()).optional(),
 });
 export type WebsocketRequest = z.infer<typeof WebsocketRequestModel>;
+
+export type HttpMethod = "get" | "post";
+export const REQUEST_METHODS: Record<keyof HttpOperations, HttpMethod> = {
+    ping: "get",
+    metrics: "get",
+    createGame: "post",
+    getGameState: "get",
+    validateGame: "post",
+    getGameHistory: "get",
+    exportGamePdf: "post",
+    joinGame: "post",
+    authenticate: "post",
+    refreshCredentials: "post",
+
+    leaveGame: "post",
+    submitTask: "post",
+    viewPlayerInfo: "post", //
+    viewTaskInfo: "post", //
+    viewGameInfo: "post", //
+
+    startGame: "post",
+    kickPlayer: "post",
+    kickAllPlayers: "post",
+    lockGame: "post",
+    unlockGame: "post",
+    viewTaskHostInfo: "post", //
+    viewGameHostInfo: "post", //
+
+    endGame: "post",
+    removeAdmin: "post",
+}
 
 // Access role requirements for requests
 // - `player-self`: The request can be made if the requester and the target of the request is the same player
