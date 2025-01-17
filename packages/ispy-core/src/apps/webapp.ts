@@ -5,7 +5,7 @@ import { createLibrary } from "../lib/library";
 
 async function main() {
     const mem = await $mem();
-    const globalCtx = await mergeAdapters([mem]);
+    const globalCtx = await mergeAdapters([ mem ]);
     const lib = createLibrary(globalCtx);
     bindExpress(lib);
 }

@@ -1,5 +1,5 @@
 import { Entities } from "@cloudydaiyz/ispy-shared";
-import { ModifyWebsocketConnection, ReadWebsocketConnection } from "./websocket";
+import { AbstractWebsocket, AccessWebsocketConnection } from "./ws-ctx";
 
 export type CurrentRequest = {
     requestId: string;
@@ -10,5 +10,7 @@ export type CurrentRequest = {
     // User information, if retrieved from the db (usually to confirm role). Used if access token is provided.
     currentUser?: Entities.User;
     // Information about the current connection if the current request was sent through a websocket
-    socket?: ReadWebsocketConnection & ModifyWebsocketConnection;
+    accessWs?: AccessWebsocketConnection;
+    // Raw websocket of the requester, if any
+    ws?: AbstractWebsocket;
 }

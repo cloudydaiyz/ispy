@@ -2,7 +2,7 @@ import { Entities, Requests } from "@cloudydaiyz/ispy-shared";
 
 export interface AbstractWebsocket {
     send: (message: string) => void;
-    disconnect: () => void;
+    close: () => void;
 }
 
 export type WebsocketConnection = {
@@ -10,7 +10,6 @@ export type WebsocketConnection = {
     username: string;
     role: Entities.UserRole;
     taskInfoView?: string;
-    isAuthenticated: boolean;
     isViewingGameInfo: boolean;
     isViewingGameHostInfo: boolean;
 }
@@ -21,36 +20,40 @@ export interface ReadWebsocketConnection {
     getRole: () => Entities.UserRole;
     // Specifies the ID of the task the user is viewing, if any
     getTaskInfoView: () => string | undefined;
-    isAuthenticated: () => boolean;
     isViewingGameInfo: () => boolean;
     isViewingGameHostInfo: () => boolean;
 }
 
 // Operations that can be performed on websocket connections
 export interface ModifyWebsocketConnection {
-    setAuthenticated: (flag: boolean) => Promise<void>;
     setTaskInfoView: (taskId?: string) => Promise<void>;
     setViewGameInfo: (flag: boolean) => Promise<void>;
     setViewGameHostInfo: (flag: boolean) => Promise<void>;
 }
 
+// Operations that cna be performed on a single websocket connection
+export type AccessWebsocketConnection = ReadWebsocketConnection & ModifyWebsocketConnection;
+
 export type WebsocketTarget = string[] | Entities.UserRole | 'all';
+
+export interface WebsocketInitOperations {
+    // Sets up connection information
+    connect: (target: WebsocketConnection) => void;
+    // Disconnects the connection with the target
+    disconnect: (target: WebsocketTarget) => void;
+}
 
 // Websocket requests that can be sent to client(s)
 // Setup on app setup
-export interface WebsocketOperationsContext extends Requests.WebsocketServerOperations {
-    // Sets up connection information
-    connect: (target: WebsocketConnection) => void;
+export interface WebsocketOperationsContext extends Requests.WebsocketServerOperations, WebsocketInitOperations {
     // Sets the target of the following request
     // Must be called before each method
-    // Returns another context with targets set to params to chain calls
+    // Returns another context with target set to params to chain calls
     to: (target: WebsocketTarget) => WebsocketOperationsContext;
     // Obtains information about websocket connections for the target
     read: () => ReadWebsocketConnection[];
     // Sets up a bulk operation that can be performed on the target
     modify: () => ModifyWebsocketConnection;
     // Obtains read & write information for the given user
-    get: (username: string) => ReadWebsocketConnection & ModifyWebsocketConnection;
-    // Disconnects the connection with the target
-    disconnect: (target: WebsocketTarget) => void;
+    get: (username: string) => AccessWebsocketConnection;
 };

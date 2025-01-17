@@ -1,21 +1,23 @@
 import { Entities, Requests } from "@cloudydaiyz/ispy-shared";
-import { CurrentRequest, Operation } from "../../lib/context";
+import { AccessWebsocketConnection, CurrentRequest } from "../../lib/context";
 import { Library } from "../../lib/library";
 import { ZodError, ZodType } from "zod";
 import express from "express";
 
 import ObjectID from "bson-objectid";
 import assert from "assert";
-import { AuthJwtPayload, extractAccessToken, extractRefreshToken } from "../../util";
-import { ExpiredPermissionsError, IllegalStateError, InvalidAuthError, InvalidInputError, InvalidPermissionsError } from "../../lib/errors/err";
+import expressWs from "express-ws";
 
-// {
-//     'Access-Control-Allow-Origin': '*',
-//     'Access-Control-Allow-Headers': '*',
-//     'Access-Control-Allow-Method': 'OPTION,GET,POST',
-//     'Access-Control-Max-Age': 600,
-//     'Access-Control-Allow-Credentials': true,
-// }
+import { AuthJwtPayload, extractAccessToken, extractRefreshToken } from "../../util";
+import { ExpiredPermissionsError, IllegalStateError, InvalidAuthError, InvalidInputError, InvalidPermissionsError } from "../../lib/errors";
+
+const DEFAULT_HTTP_HEADERS = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': '*',
+    'Access-Control-Allow-Method': 'OPTION,GET,POST',
+    'Access-Control-Max-Age': '600',
+    'Access-Control-Allow-Credentials': 'true',
+};
 
 type AuthorizationParams = {
     basic?: Entities.BasicAuth;
@@ -118,9 +120,6 @@ export function httpRoute<I>(props: HttpRouteProps<I>) {
             if(authParams.bearerAuth || authParams.bearerRefresh) {
                 username = authParams.bearerPayload!.user;
                 currentUser = await lib.local.getCurrentUser(username);
-                // if(ws) {
-                //     socket = await lib.local.getCurrentWs(username);
-                // }
             }
         }
 
@@ -138,16 +137,22 @@ export function httpRoute<I>(props: HttpRouteProps<I>) {
             scheduled: false,
             username, 
             currentUser, 
-            socket,
+            accessWs: socket,
         };
         const validatedBody = body?.parse(request.body) as any;
 
         const llib = lib.withLocalCtx({ req });
         const result = await llib.http[route](validatedBody);
+
+        for(const header in DEFAULT_HTTP_HEADERS) {
+            const val = DEFAULT_HTTP_HEADERS[header as keyof typeof DEFAULT_HTTP_HEADERS];
+            response.header(header, val);
+        }
+
         if(result) {
             response.status(200).json(result);
         } else {
-            response.status(204).json(result);
+            response.status(204).send();
         }
     }
 
@@ -156,22 +161,78 @@ export function httpRoute<I>(props: HttpRouteProps<I>) {
             await processRequest(request, response);
         } catch(e) {
             if(e instanceof ZodError) {
-                response.send(400).json({ message: e.message });
+                response.status(400).json({ message: e.message });
             } else if(e instanceof InvalidInputError) {
-                response.send(400).json({ message: e.message });
+                response.status(400).json({ message: e.message });
             } else if(e instanceof IllegalStateError) {
-                response.send(400).json({ message: e.message });
+                response.status(400).json({ message: e.message });
             } else if(e instanceof InvalidAuthError) {
-                response.send(401).json({ message: "Invalid auth" });
+                response.status(401).json({ message: "Invalid auth" });
             } else if(e instanceof ExpiredPermissionsError) {
-                response.send(401).json({ message: "Expired permissions" });
+                response.status(401).json({ message: "Expired permissions" });
             } else if(e instanceof InvalidPermissionsError) {
-                response.send(403).json({ message: "Invalid permissions" });
+                response.status(403).json({ message: "Invalid permissions" });
             } else {
-                response.send(500).json({ message: "A server error has occurred" });
+                response.status(500).json({ message: "A server error has occurred" });
             }
         }
     }
 
     app[method](path, handleRequest);
+}
+
+
+export function wsRoutes(lib: Library, app: expressWs.Application) {
+    const LIB_WS_OPS_IGNORE = ["connect", "disconnect", "authenticate"];
+    const LIB_WS_OPS = Object.keys(lib.sock).filter(o => !LIB_WS_OPS_IGNORE.includes(o));
+
+    app.ws("/", (ws, req) => {
+        let username: string | null = null; 
+        let currentUser: Entities.User | null = null;
+        let accessWs: AccessWebsocketConnection | null = null;
+
+        ws.on('message', async (msg) => {
+            console.log(msg);
+
+            const wsreq = Requests.WebsocketRequestModel.parse(msg);
+            const method = wsreq.method as keyof Requests.WebsocketClientOperations;
+            if(method == "authenticate") {
+                const body = Entities.AccessTokenModel.parse(wsreq.payload);
+                const req: CurrentRequest = {
+                    requestId: (new ObjectID()).toHexString(),
+                    scheduled: false,
+                    ws,
+                };
+                lib.withLocalCtx({ req }).sock.authenticate(body);
+
+                username = req.username!;
+                currentUser = await lib.local.getCurrentUser(username);
+                accessWs = await lib.local.getCurrentWs(username);
+            }
+
+            if(LIB_WS_OPS.includes(method)) {
+                assert(username && currentUser && accessWs, "Unable to perform operation. Connection unauthenticated.");
+                const req: CurrentRequest = {
+                    requestId: (new ObjectID()).toHexString(),
+                    scheduled: false,
+                    username,
+                    currentUser,
+                    accessWs,
+                    ws,
+                };
+                await lib.withLocalCtx({ req }).sock[method](undefined as any);
+            }
+        });
+
+        ws.on('close', () => {
+            if(username) {
+                lib.sock.disconnect([ username ]);
+            }
+        });
+
+        ws.on('open', () => {
+            setTimeout(() => { if(!username) ws.close() }, 10000);
+            console.log('Web socket active. User must authenticate within 10 seconds.', req);
+        });
+    });
 }

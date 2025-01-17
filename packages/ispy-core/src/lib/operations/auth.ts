@@ -8,10 +8,19 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import ObjectID from "bson-objectid";
 import assert from "assert";
+import { InvalidAuthError } from "../errors";
+
+export function extractAccessToken(request: Entities.AccessToken): AuthJwtPayload {
+    try {
+        return jwt.verify(request.accessToken, ACCESS_TOKEN_SECRET) as AuthJwtPayload;
+    } catch {
+        throw new InvalidAuthError("Invalid auth.");
+    }
+}
 
 export async function authenticate(ctx: Context, request: Entities.AccessToken): Promise<Requests.ValidateResponse> {
     try {
-        jwt.verify(request.accessToken, ACCESS_TOKEN_SECRET);
+        extractAccessToken(request);
         return { valid: true };
     } catch {
         return { valid: false };

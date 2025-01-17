@@ -1,5 +1,5 @@
 import { Entities, Requests } from "@cloudydaiyz/ispy-shared";
-import { Context, GlobalContext, LocalContext, ModifyWebsocketConnection, ReadWebsocketConnection } from "./context";
+import { AccessWebsocketConnection, Context, GlobalContext, LocalContext, ModifyWebsocketConnection, ReadWebsocketConnection, WebsocketInitOperations } from "./context";
 import * as Operations from "./operations";
 import { PromisifyAll } from "../util";
 
@@ -35,8 +35,12 @@ function httpOperations(ctx: Context): Requests.HttpOperations {
     };
 }
 
-function sockOperations(ctx: Context): PromisifyAll<Requests.WebsocketClientOperations> {
+type WebsocketLibraryOperations = PromisifyAll<Requests.WebsocketClientOperations> & WebsocketInitOperations;
+
+function sockOperations(ctx: Context): WebsocketLibraryOperations {
     return {
+        connect: ctx.sock.connect,
+        disconnect: ctx.sock.disconnect,
         authenticate: (req: Entities.AccessToken) => Operations.Socket.authenticate(ctx, req),
         startViewGameInfo: () => Operations.Socket.startViewGameInfo(ctx),
         stopViewGameInfo: () => Operations.Socket.stopViewGameInfo(ctx),
@@ -54,14 +58,14 @@ function localOperations(ctx: Context): LocalRequests {
 
 interface LocalRequests {
     getCurrentUser: (username: string) => Promise<Entities.User>;
-    getCurrentWs: (username: string) => Promise<ReadWebsocketConnection & ModifyWebsocketConnection>;
+    getCurrentWs: (username: string) => Promise<AccessWebsocketConnection>;
 }
 
 export interface Library {
     boot: () => Promise<void>;
     shutdown: () => Promise<void>;
     http: Requests.HttpOperations;
-    sock: PromisifyAll<Requests.WebsocketClientOperations>;
+    sock: WebsocketLibraryOperations;
     local: LocalRequests;
 }
 

@@ -1,3 +1,3 @@
 export * from "./auth";
 export * from "./game";
-export * as Socket from "./websocket";
+export * as Socket from "./ws-ops";

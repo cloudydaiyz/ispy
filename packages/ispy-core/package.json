@@ -2,6 +2,7 @@
   "name": "@cloudydaiyz/ispy-core",
   "version": "1.0.0",
   "main": "index.js",
+  "private": true,
   "scripts": {
     "start": "tsc && node dist/apps/webapp.js",
     "wstest": "node dist/wstest.js"

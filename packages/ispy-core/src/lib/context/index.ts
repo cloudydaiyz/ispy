@@ -2,13 +2,13 @@ import { PartialAll } from "../../util";
 import { DatabaseCtx } from "./db"
 import { SchedulerCtx } from "./scheduler";
 import { CurrentRequest } from "./request";
-import { WebsocketOperationsContext } from "./websocket";
+import { WebsocketOperationsContext } from "./ws-ctx";
 import assert from "assert";
 
 export * from "./db";
 export * from "./files";
 export * from "./scheduler";
-export * from "./websocket";
+export * from "./ws-ctx";
 export * from "./request";
 
 // Interaction between the app and its infrastructure
@@ -32,7 +32,8 @@ export type LocalContext = {
     readonly req: CurrentRequest,
 }
 
-// Global context is defined initially, and local context is lazily defined during request
+// Global context is defined initially, and local context is lazily defined during the start of a request.
+// For websocket connections, the local context is populated on authenticate.
 export type Context = GlobalContext & { local?: LocalContext };
 
 export type ContextAdapter = (c: PartialAll<GlobalContext>) => Promise<void>;

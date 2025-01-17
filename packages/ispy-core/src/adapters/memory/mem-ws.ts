@@ -1,5 +1,5 @@
 import { Entities, Requests } from "@cloudydaiyz/ispy-shared";
-import { ReadWebsocketConnection, WebsocketConnection, ModifyWebsocketConnection, WebsocketOperationsContext, WebsocketTarget } from "../../lib/context";
+import { ReadWebsocketConnection, WebsocketConnection, ModifyWebsocketConnection, WebsocketOperationsContext, WebsocketTarget, AccessWebsocketConnection } from "../../lib/context";
 import assert from "assert";
 
 let connections: WebsocketConnection[] = [];
@@ -37,7 +37,7 @@ class WebsocketOperator implements WebsocketOperationsContext {
         this.target = target;
     }
 
-    get(username: string): ReadWebsocketConnection & ModifyWebsocketConnection {
+    get(username: string): AccessWebsocketConnection {
         const [ read ] = this.read(username);
         const modify = this.modify(username);
         return { ...read, ...modify };
@@ -54,7 +54,7 @@ class WebsocketOperator implements WebsocketOperationsContext {
 
     disconnect(target: WebsocketTarget): void {
         const matched = getTargets(connections, target);
-        matched.forEach(c => c.ws.disconnect());
+        matched.forEach(c => c.ws.close());
     };
 
     read(username?: string): ReadWebsocketConnection[] {
@@ -65,7 +65,6 @@ class WebsocketOperator implements WebsocketOperationsContext {
             getUsername: () => m.username,
             getRole: () => m.role,
             getTaskInfoView: () => m.taskInfoView,
-            isAuthenticated: () => m.isAuthenticated,
             isViewingGameInfo: () => m.isViewingGameInfo,
             isViewingGameHostInfo: () => m.isViewingGameHostInfo,
         }));
@@ -76,7 +75,6 @@ class WebsocketOperator implements WebsocketOperationsContext {
         assert(target, "No target currently set.");
         const matched = getTargets(connections, target);
         return {
-            setAuthenticated: async (flag: boolean) => { matched.forEach(m => { m.isAuthenticated = flag } ) },
             setTaskInfoView: async (taskId?: string) => { matched.forEach(m => { m.taskInfoView = taskId } ) },
             setViewGameInfo: async (flag: boolean) => { matched.forEach(m => { m.isViewingGameInfo = flag } ) },
             setViewGameHostInfo: async (flag: boolean) => { matched.forEach(m => { m.isViewingGameHostInfo = flag } ) },

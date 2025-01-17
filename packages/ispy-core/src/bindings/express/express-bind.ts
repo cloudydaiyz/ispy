@@ -1,11 +1,16 @@
 import express from "express";
 import expressWs from "express-ws";
-import { httpRoute } from "./route";
+import { httpRoute, wsRoutes } from "./route";
 import { Library } from "../../lib/library";
 import { Entities, Requests } from "@cloudydaiyz/ispy-shared";
 
 // For experimentation
-function addTestRoutes(app: express.Application) {
+function addTestHttpRoutes(app: express.Application) {
+    app.get("/test/ping", (req, res) => {
+        console.log(JSON.stringify(req.body, null, 4));
+        res.status(200).send("You have pinged this app.");
+    });
+
     app.post("/test/bad-status", (req, res) => {
         res.status(101).send();
     });
@@ -46,19 +51,9 @@ export function binding(lib: Library) {
     httpRoute({ lib, app, route: "endGame" });
     httpRoute({ lib, app, route: "removeAdmin", body: Entities.UsernameModel });
 
-    wsapp.app.get("/", (req, res) => {
-        console.log(JSON.stringify(req.body, null, 4));
-        res.status(200).send("You have pinged this app.");
-    });
+    wsRoutes(lib, app);
 
-    wsapp.app.ws("/", function(ws, req) {
-        ws.on('message', function(msg) {
-            console.log(msg);
-        });
-        console.log('Web socket active.', req);
-    });
-
-    wsapp.app.listen(port, () => {
+    app.listen(port, () => {
         console.log("This app is now listening on port " + port);
     });
 }
