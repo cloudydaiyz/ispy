@@ -181,7 +181,6 @@ export function httpRoute<I>(props: HttpRouteProps<I>) {
     app[method](path, handleRequest);
 }
 
-
 export function wsRoutes(lib: Library, app: expressWs.Application) {
     const LIB_WS_OPS_IGNORE = ["connect", "disconnect", "authenticate"];
     const LIB_WS_OPS = Object.keys(lib.sock).filter(o => !LIB_WS_OPS_IGNORE.includes(o));
@@ -224,11 +223,7 @@ export function wsRoutes(lib: Library, app: expressWs.Application) {
             }
         });
 
-        ws.on('close', () => {
-            if(username) {
-                lib.sock.disconnect([ username ]);
-            }
-        });
+        ws.on('close', () => { if(username) lib.sock.disconnect([ username ]) });
 
         ws.on('open', () => {
             setTimeout(() => { if(!username) ws.close() }, 10000);

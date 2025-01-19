@@ -4,6 +4,7 @@ import { SchedulerCtx } from "./scheduler";
 import { CurrentRequest } from "./request";
 import { WebsocketOperationsContext } from "./ws-ctx";
 import assert from "assert";
+import { FileStorageCtx } from "./files";
 
 export * from "./db";
 export * from "./files";
@@ -16,6 +17,7 @@ export * from "./request";
 export type AppContext = {
     db: DatabaseCtx,
     scheduler: SchedulerCtx,
+    files: FileStorageCtx,
 }
 
 // Even if not explicitly assigned, all operation functions satisfy this type
@@ -40,18 +42,7 @@ export type ContextAdapter = (c: PartialAll<GlobalContext>) => Promise<void>;
 
 // Merges all partial adapters into a complete adapter
 export async function mergeAdapters(adapters: ContextAdapter[]): Promise<GlobalContext> {
-    const ctx: PartialAll<Context> = { app: undefined };
+    const ctx: PartialAll<Context> = {};
     adapters.forEach(async (adapter) => await adapter(ctx));
-
-    // Check that all members are initialized
-    const toCheck: any[] = Object.keys(ctx).map(k => ctx[k as keyof typeof ctx]);
-    for(let i = 0; i < toCheck.length; i++) {
-        const ctxMember = toCheck[i];
-        assert(ctxMember, 'All members not initialized');
-        if(ctxMember instanceof Object) {
-            const additionalMembers = Object.keys(ctxMember).map(k => ctxMember[k as keyof typeof ctxMember])
-            toCheck.push(...additionalMembers);
-        }
-    }
     return ctx as GlobalContext;
 }

@@ -1,7 +1,8 @@
 import { Entities, Requests } from "@cloudydaiyz/ispy-shared";
 import { Context, } from "../context";
 import { getCurrentPointValue } from "../../util";
-import { dropUser, dropUsers } from "./helper";
+import { dropUser, dropUsers } from "./op-helper";
+import { z } from "zod";
 import assert from "assert";
 
 export async function metrics(ctx: Context): Promise<Entities.AppMetrics> {
@@ -13,8 +14,9 @@ export async function getGameState(ctx: Context): Promise<Entities.GameState> {
     return stats.state;
 }
 
-export async function validateGame(ctx: Context, request: Entities.GameConfiguration): Promise<Requests.ValidateResponse> {
-    return { valid: true };
+export async function validateGame(ctx: Context, request: any): Promise<Requests.ValidateResponse> {
+    const valid = Entities.GameConfigurationModel.safeParse(request).success;
+    return { valid };
 }
 
 export async function getGameHistory(ctx: Context): Promise<Entities.GameHistory> {

@@ -1,4 +1,7 @@
+import { Readable } from "stream";
+
 export interface FileStorageCtx {
-    createFile: () => Promise<void>;
-    deleteFile: () => Promise<void>;
+    createExportPdfFile: (taskIds: string[]) => Promise<void>;
+    getExportPdfFile: () => Promise<Readable>;
+    deleteExportPdfFile: () => Promise<void>;
 }

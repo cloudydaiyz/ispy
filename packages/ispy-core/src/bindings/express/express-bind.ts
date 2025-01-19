@@ -3,6 +3,7 @@ import expressWs from "express-ws";
 import { httpRoute, wsRoutes } from "./route";
 import { Library } from "../../lib/library";
 import { Entities, Requests } from "@cloudydaiyz/ispy-shared";
+import { z } from "zod";
 
 // For experimentation
 function addTestHttpRoutes(app: express.Application) {
@@ -27,7 +28,7 @@ export function binding(lib: Library) {
     httpRoute({ lib, app, route: "metrics" });
     httpRoute({ lib, app, route: "createGame", body: Requests.CreateGameRequestModel });
     httpRoute({ lib, app, route: "getGameState" });
-    httpRoute({ lib, app, route: "validateGame", body: Entities.GameConfigurationModel });
+    httpRoute({ lib, app, route: "validateGame", body: z.any() });
     httpRoute({ lib, app, route: "getGameHistory" });
     httpRoute({ lib, app, route: "exportGamePdf" });
     httpRoute({ lib, app, route: "joinGame", body: Entities.BasicAuthModel });
