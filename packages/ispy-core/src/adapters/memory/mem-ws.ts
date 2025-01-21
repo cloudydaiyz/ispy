@@ -1,6 +1,6 @@
 import { Entities, Requests } from "@cloudydaiyz/ispy-shared";
 import { ReadWebsocketConnection, WebsocketConnection, ModifyWebsocketConnection, WebsocketOperationsContext, WebsocketTarget, AccessWebsocketConnection } from "../../lib/context";
-import assert from "assert";
+import { AppError, InvalidInputError } from "../../lib/errors";
 
 let connections: WebsocketConnection[] = [];
 
@@ -48,7 +48,7 @@ class WebsocketOperator implements WebsocketOperationsContext {
     };
 
     connect(target: WebsocketConnection): void {
-        assert(!connections.find(c => c.username == target.username), "User already connected.");
+        InvalidInputError.assert(!connections.find(c => c.username == target.username), "User already connected.");
         connections.push(target);
     };
 
@@ -59,7 +59,7 @@ class WebsocketOperator implements WebsocketOperationsContext {
 
     read(username?: string): ReadWebsocketConnection[] {
         const target = username ? [username] : this.target;
-        assert(target, "No target currently set.");
+        AppError.assert(target, undefined, { detailedMessage: "No target currently set." });
         const matched = getTargets(connections, target);
         return matched.map(m => ({
             getUsername: () => m.username,
@@ -72,7 +72,7 @@ class WebsocketOperator implements WebsocketOperationsContext {
 
     modify(username?: string): ModifyWebsocketConnection {
         const target = username ? [username] : this.target;
-        assert(target, "No target currently set.");
+        AppError.assert(target, undefined, { detailedMessage: "No target currently set." });
         const matched = getTargets(connections, target);
         return {
             setTaskInfoView: async (taskId?: string) => { matched.forEach(m => { m.taskInfoView = taskId } ) },
@@ -82,14 +82,14 @@ class WebsocketOperator implements WebsocketOperationsContext {
     };
 
     authenticateAck(): void {
-        assert(this.target, "No target currently set.");
+        AppError.assert(this.target, undefined, { detailedMessage: "No target currently set." });
         sendToTargets({
             method: "authenticateAck",
         }, connections, this.target);
     };
 
     viewGameInfoAck(request: Entities.PublicGameStats): void {
-        assert(this.target, "No target currently set.");
+        AppError.assert(this.target, undefined, { detailedMessage: "No target currently set." });
         sendToTargets({
             method: "viewGameInfoAck",
             payload: request,
@@ -97,7 +97,7 @@ class WebsocketOperator implements WebsocketOperationsContext {
     };
 
     gameInfo(request: Entities.PublicGameStats): void {
-        assert(this.target, "No target currently set.");
+        AppError.assert(this.target, undefined, { detailedMessage: "No target currently set." });
         sendToTargets({
             method: "gameInfo",
             payload: request,
@@ -105,7 +105,7 @@ class WebsocketOperator implements WebsocketOperationsContext {
     };
 
     viewGameHostInfoAck(request: Entities.Game): void {
-        assert(this.target, "No target currently set.");
+        AppError.assert(this.target, undefined, { detailedMessage: "No target currently set." });
         sendToTargets({
             method: "viewGameHostInfoAck",
             payload: request,
@@ -113,7 +113,7 @@ class WebsocketOperator implements WebsocketOperationsContext {
     };
 
     gameHostInfo(request: Entities.Game): void {
-        assert(this.target, "No target currently set.");
+        AppError.assert(this.target, undefined, { detailedMessage: "No target currently set." });
         sendToTargets({
             method: "gameHostInfo",
             payload: request,
@@ -121,7 +121,7 @@ class WebsocketOperator implements WebsocketOperationsContext {
     };
 
     gameEnded(request: Entities.Game): void {
-        assert(this.target, "No target currently set.");
+        AppError.assert(this.target, undefined, { detailedMessage: "No target currently set." });
         sendToTargets({
             method: "gameEnded",
             payload: request,

@@ -3,7 +3,6 @@ import { DatabaseCtx } from "./db"
 import { SchedulerCtx } from "./scheduler";
 import { CurrentRequest } from "./request";
 import { WebsocketOperationsContext } from "./ws-ctx";
-import assert from "assert";
 import { FileStorageCtx } from "./files";
 
 export * from "./db";

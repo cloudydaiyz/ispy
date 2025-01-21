@@ -4,6 +4,9 @@ import { httpRoute, wsRoutes } from "./route";
 import { Library } from "../../lib/library";
 import { Entities, Requests } from "@cloudydaiyz/ispy-shared";
 import { z } from "zod";
+import path from "path";
+import { Readable } from "stream";
+import { EXPORT_GAME_PDF_ROUTE } from "../../constants";
 
 // For experimentation
 function addTestHttpRoutes(app: express.Application) {
@@ -51,6 +54,19 @@ export function binding(lib: Library) {
 
     httpRoute({ lib, app, route: "endGame" });
     httpRoute({ lib, app, route: "removeAdmin", body: Entities.UsernameModel });
+
+    // Export game PDF file route
+    httpRoute({
+        lib, 
+        app, 
+        route: {
+            path: EXPORT_GAME_PDF_ROUTE!,
+            method: "get",
+            roles: ["player", "host", "admin"],
+            op: lib.http.exportGamePdfFile,
+        },
+        onSuccess: (response, result) => response.status(200).send(result as Readable),
+    });
 
     wsRoutes(lib, app);
 

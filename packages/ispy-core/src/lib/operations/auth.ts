@@ -7,8 +7,7 @@ import { Entities, Requests } from "@cloudydaiyz/ispy-shared";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import ObjectID from "bson-objectid";
-import assert from "assert";
-import { InvalidAuthError } from "../errors";
+import { IllegalStateError, InvalidAuthError, InvalidInputError } from "../errors";
 
 export function extractAccessToken(request: Entities.AccessToken): AuthJwtPayload {
     try {
@@ -41,14 +40,14 @@ export async function refreshCredentials(ctx: Context, request: Entities.Refresh
 export async function joinGame(ctx: Context, request: Entities.BasicAuth): Promise<Entities.BearerAuth> {
     const { gameStatsStore, userStore, leaderboardStore, adminStore, playerStore } = ctx.app.db;
     const stats = await gameStatsStore.readGameStats();
-    assert(!stats.locked, "This game is currently locked. You are unable to join.");
+    IllegalStateError.assert(!stats.locked, "This game is currently locked. You are unable to join.");
 
     const username = request.username;
     const password = await bcrypt.hash(request.password, AUTH_SALT_ROUNDS);
     let role: Entities.UserRole = 'player';
 
     const user = userStore.readOptionalUser(username);
-    assert(!user, "User already exists.");
+    InvalidInputError.assert(!user, "User already exists.");
 
     const userId = (new ObjectID()).toHexString();
     await userStore.writeUser(request.username, {
@@ -61,14 +60,14 @@ export async function joinGame(ctx: Context, request: Entities.BasicAuth): Promi
     const admin = await adminStore.readOptionalAdmin(username);
     if(admin) {
         role = 'admin';
-        assert(!admin.userId, "Admin already exists.");
+        InvalidInputError.assert(!admin.userId, "Admin already exists.");
 
         const adminPass = await bcrypt.hash(admin.password, AUTH_SALT_ROUNDS);
-        assert(password == adminPass, "Invalid credentials.");
+        InvalidAuthError.assert(password == adminPass, "Invalid credentials.");
 
         await adminStore.writeAdmin(username, { userId });
     } else {
-        assert(stats.players.length < stats.configuration.maxPlayers, "Max players reached for this game.");
+        IllegalStateError.assert(stats.players.length < stats.configuration.maxPlayers, "Max players reached for this game.");
         await playerStore.createPlayer(username, {
             username,
             completed: false,
@@ -94,8 +93,10 @@ export async function createGame(ctx: Context, request: Requests.CreateGameReque
     });
     await adminStore.createAdmins(request.admins);
 
+    const taskIds: string[] = [];
     for(const task of request.config.tasks) {
         task.id = (new ObjectID()).toHexString();
+        taskIds.push(task.id);
         for(const response of task.responses) {
             response.id = (new ObjectID()).toHexString();
         }
@@ -118,6 +119,7 @@ export async function createGame(ctx: Context, request: Requests.CreateGameReque
     await ctx.app.db.gameStatsStore.createGameStats(gameStats);
     await ctx.app.scheduler.schedule("start-game", new Date(request.config.startTime));
     await ctx.app.scheduler.schedule("end-game", new Date(request.config.endTime));
+    await ctx.app.files.createExportPdfFile(taskIds);
 
     const accessToken = jwt.sign({ user: request.hostUsername, role: "host" }, ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
     const refreshToken = jwt.sign({ user: request.hostUsername, role: "host" }, REFRESH_TOKEN_SECRET, { expiresIn: '2h' });

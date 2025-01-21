@@ -1,13 +1,13 @@
 import { ScheduledJob, SchedulerCtx } from "../../lib/context";
 
-import assert from "assert";
 import scheduler from "node-schedule";
+import { AppError } from "../../lib/errors";
 
 const jobOperations: Record<string, () => Promise<void>> = {};
 const activeJobs: Record<string, scheduler.Job> = {};
 
 const registerJob = async (jobName: ScheduledJob, onInvoke?: () => Promise<void>): Promise<void> => {
-    assert(onInvoke, "onInvoke required to register job");
+    AppError.assert(onInvoke, "onInvoke required to register job");
     jobOperations[jobName] = onInvoke;
 }
 

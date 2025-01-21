@@ -6,7 +6,7 @@ import MemWs from "./mem-ws";
 import MemScheduler from "./mem-scheduler";
 import MemFs from "./mem-file";
 import assert from "assert";
-import { TEMPDIR, UI_CANONICAL } from "../../env";
+import { CORE_CANONICAL, TEMPDIR, UI_CANONICAL } from "../../env";
 
 export async function $dbAdapter(): Promise<ContextAdapter> {
     return async function adapter(c: PartialAll<GlobalContext>) {
@@ -23,6 +23,7 @@ export async function $scheduleAdapter(): Promise<ContextAdapter> {
 export async function $fileAdapter(): Promise<ContextAdapter> {
     assert(TEMPDIR, "Invalid app setup, must have ISPY_CORE_TEMPDIR environment variable defined.");
     assert(UI_CANONICAL, "Invalid app setup, must have ISPY_UI_CANONICAL environment variable defined.");
+    assert(CORE_CANONICAL, "Invalid app setup, must have ISPY_CORE_CANONICAL environment variable defined.");
     return async function adapter(c: PartialAll<GlobalContext>) {
         c.app ? c.app.files = MemFs : c.app = { files: MemFs };
     }

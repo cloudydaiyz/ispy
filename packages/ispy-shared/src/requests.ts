@@ -164,7 +164,6 @@ export const REQUEST_ROLE_REQUIREMENTS: Record<keyof HttpOperations | keyof Webs
     getGameState: undefined,
     validateGame: undefined,
     getGameHistory: undefined,
-    exportGamePdf: undefined,
     joinGame: undefined,
     authenticate: undefined,
     refreshCredentials: undefined,
@@ -177,6 +176,7 @@ export const REQUEST_ROLE_REQUIREMENTS: Record<keyof HttpOperations | keyof Webs
     startViewGameInfo: ["player"],
     stopViewGameInfo: ["player"],
 
+    exportGamePdf: ["host", "admin"],
     startGame: ["host", "admin"],
     kickPlayer: ["host", "admin"],
     kickAllPlayers: ["host", "admin"],

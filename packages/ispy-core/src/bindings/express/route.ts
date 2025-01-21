@@ -5,11 +5,10 @@ import { ZodError, ZodType } from "zod";
 import express from "express";
 
 import ObjectID from "bson-objectid";
-import assert from "assert";
 import expressWs from "express-ws";
 
 import { AuthJwtPayload, extractAccessToken, extractRefreshToken } from "../../util";
-import { ExpiredPermissionsError, IllegalStateError, InvalidAuthError, InvalidInputError, InvalidPermissionsError } from "../../lib/errors";
+import { AppError, IllegalStateError, InvalidAuthError, InvalidInputError, InvalidPermissionsError } from "../../lib/errors";
 
 const DEFAULT_HTTP_HEADERS = {
     'Access-Control-Allow-Origin': '*',
@@ -36,7 +35,7 @@ function extractAuth(auth: string): AuthorizationParams {
         const basicTokenRegex = /^(.+):(.+)$/;
         const creds = basicToken.match(basicTokenRegex);
 
-        assert(creds, new InvalidAuthError("Invalid basic auth."));
+        InvalidAuthError.assert(creds, "Invalid basic auth.");
         params.basic = { username: creds[1], password: creds[2] };
     }
 
@@ -60,7 +59,7 @@ function extractAuth(auth: string): AuthorizationParams {
             params.bearerPayload = verifyRefreshToken;
         }
 
-        assert(verifyAccessToken || verifyRefreshToken, "Invalid bearer auth.");
+        InvalidAuthError.assert(verifyAccessToken || verifyRefreshToken, "Invalid bearer auth.");
     }
 
     return params;
@@ -82,9 +81,21 @@ function validateRole(username: string, role: Entities.UserRole, requirements: R
 interface HttpRouteProps<I> {
     lib: Library,
     app: express.Application,
-    route: keyof Requests.HttpOperations,
+    route: keyof Requests.HttpOperations | RouteParams,
     body?: ZodType<I>,
+    onSuccess?: (response: express.Response, result: any) => void,
 }
+
+// Params associated with a specific route
+// Explicitly defined if a route name isn't available in the shared library, but must be declared
+interface RouteParams {
+    path: string,
+    method: Requests.HttpMethod,
+    roles: Requests.RoleRequirement[] | undefined,
+    op: (input: any) => any,
+}
+
+// path, method, roles, operation
 
 export function httpRoute<I>(props: HttpRouteProps<I>) {
     const {
@@ -92,11 +103,12 @@ export function httpRoute<I>(props: HttpRouteProps<I>) {
         app,
         body,
         route,
+        onSuccess
     } = props;
 
-    const path = Requests.Paths[route];
-    const method = Requests.REQUEST_METHODS[route];
-    const roles = Requests.REQUEST_ROLE_REQUIREMENTS[route];
+    const path = typeof route == 'string' ? Requests.Paths[route] : route.path;
+    const method = typeof route == 'string' ? Requests.REQUEST_METHODS[route] : route.method;
+    const roles = typeof route == 'string' ? Requests.REQUEST_ROLE_REQUIREMENTS[route] : route.roles;
 
     async function processRequest(request: express.Request, response: express.Response) {
         let reqbody = request.body;
@@ -125,10 +137,10 @@ export function httpRoute<I>(props: HttpRouteProps<I>) {
 
         // Validate permissions
         if(roles) {
-            assert(username && currentUser, "Must provide credentials for this operation.");
+            InvalidAuthError.assert(username && currentUser, "Must provide credentials for this operation.");
 
             const target: string | undefined = request.body.username;
-            assert(!target || typeof target == "string", "Invalid target username type. Must be a string.");
+            InvalidInputError.assert(!target || typeof target == "string", "Invalid target username type. Must be a string.");
             validateRole(username, currentUser.role, roles, target);
         }
 
@@ -139,14 +151,21 @@ export function httpRoute<I>(props: HttpRouteProps<I>) {
             currentUser, 
             accessWs: socket,
         };
-        const validatedBody = body?.parse(request.body) as any;
+        const validatedBody = body ? body.parse(request.body) : body;
 
-        const llib = lib.withLocalCtx({ req });
-        const result = await llib.http[route](validatedBody);
+        const fullLib = lib.withLocalCtx({ req });
+        const result = typeof route == 'string' 
+            ? await fullLib.http[route](validatedBody as any) 
+            : await route.op(validatedBody);
 
         for(const header in DEFAULT_HTTP_HEADERS) {
             const val = DEFAULT_HTTP_HEADERS[header as keyof typeof DEFAULT_HTTP_HEADERS];
             response.header(header, val);
+        }
+
+        if(onSuccess) {
+            onSuccess(response, result);
+            return;
         }
 
         if(result) {
@@ -160,21 +179,18 @@ export function httpRoute<I>(props: HttpRouteProps<I>) {
         try {
             await processRequest(request, response);
         } catch(e) {
+
+            // Cast errors to AppError for generalized handling
             if(e instanceof ZodError) {
-                response.status(400).json({ message: e.message });
-            } else if(e instanceof InvalidInputError) {
-                response.status(400).json({ message: e.message });
-            } else if(e instanceof IllegalStateError) {
-                response.status(400).json({ message: e.message });
-            } else if(e instanceof InvalidAuthError) {
-                response.status(401).json({ message: "Invalid auth" });
-            } else if(e instanceof ExpiredPermissionsError) {
-                response.status(401).json({ message: "Expired permissions" });
-            } else if(e instanceof InvalidPermissionsError) {
-                response.status(403).json({ message: "Invalid permissions" });
-            } else {
-                response.status(500).json({ message: "A server error has occurred" });
+                e = new InvalidInputError("Invalid request body");
             }
+            if(!(e instanceof AppError)) {
+                e = new AppError("A server error has occurred");
+            }
+
+            const err = e as AppError;
+            console.error('HTTP Request Error: ' + err);
+            response.status(err.statusCode).json(err.toJSON());
         }
     }
 
@@ -210,7 +226,7 @@ export function wsRoutes(lib: Library, app: expressWs.Application) {
             }
 
             if(LIB_WS_OPS.includes(method)) {
-                assert(username && currentUser && accessWs, "Unable to perform operation. Connection unauthenticated.");
+                IllegalStateError.assert(username && currentUser && accessWs, "Unable to perform operation. Connection unauthenticated.");
                 const req: CurrentRequest = {
                     requestId: (new ObjectID()).toHexString(),
                     scheduled: false,

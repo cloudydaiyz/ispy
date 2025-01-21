@@ -1,9 +1,14 @@
 import { Entities, Requests } from "@cloudydaiyz/ispy-shared";
-import { AccessWebsocketConnection, Context, GlobalContext, LocalContext, ModifyWebsocketConnection, ReadWebsocketConnection, WebsocketInitOperations } from "./context";
+import { AccessWebsocketConnection, Context, GlobalContext, LocalContext, WebsocketInitOperations } from "./context";
 import * as Operations from "./operations";
+import { Readable } from "stream";
 import { PromisifyAll } from "../util";
 
-function httpOperations(ctx: Context): Requests.HttpOperations {
+type LibraryHttpOperations = Requests.HttpOperations & {
+    exportGamePdfFile: () => Promise<Readable>
+}
+
+function httpOperations(ctx: Context): LibraryHttpOperations {
     return {
         ping: async () => {},
         metrics: () => Operations.metrics(ctx),
@@ -12,6 +17,7 @@ function httpOperations(ctx: Context): Requests.HttpOperations {
         validateGame: (req: Entities.GameConfiguration) => Operations.validateGame(ctx, req),
         getGameHistory: () => Operations.getGameHistory(ctx),
         exportGamePdf: () => Operations.exportGamePdf(ctx),
+        exportGamePdfFile: () => Operations.exportGamePdfFile(ctx),
         joinGame: (req: Entities.BasicAuth) => Operations.joinGame(ctx, req),
         authenticate: (req: Entities.AccessToken) => Operations.authenticate(ctx, req),
         refreshCredentials: (req: Entities.RefreshToken) => Operations.refreshCredentials(ctx, req),
@@ -35,9 +41,9 @@ function httpOperations(ctx: Context): Requests.HttpOperations {
     };
 }
 
-type WebsocketLibraryOperations = PromisifyAll<Requests.WebsocketClientOperations> & WebsocketInitOperations;
+type LibraryWebsocketOperations = PromisifyAll<Requests.WebsocketClientOperations> & WebsocketInitOperations;
 
-function sockOperations(ctx: Context): WebsocketLibraryOperations {
+function sockOperations(ctx: Context): LibraryWebsocketOperations {
     return {
         connect: ctx.sock.connect,
         disconnect: ctx.sock.disconnect,
@@ -64,8 +70,8 @@ interface LocalRequests {
 export interface Library {
     boot: () => Promise<void>;
     shutdown: () => Promise<void>;
-    http: Requests.HttpOperations;
-    sock: WebsocketLibraryOperations;
+    http: LibraryHttpOperations;
+    sock: LibraryWebsocketOperations;
     local: LocalRequests;
 }
 

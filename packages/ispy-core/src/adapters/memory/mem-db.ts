@@ -1,6 +1,6 @@
 import { Entities } from "@cloudydaiyz/ispy-shared";
 import { DatabaseCtx, LeaderboardInfo } from "../../lib/context";
-import assert from "assert";
+import { IllegalStateError, InvalidInputError } from "../../lib/errors";
 
 // == APP METRICS STORE == //
 let appMetrics: Entities.AppMetrics;
@@ -15,12 +15,12 @@ export const createAppMetrics = async (): Promise<void> => {
 }
 
 export const readAppMetrics = async (): Promise<Entities.AppMetrics> => {
-    assert(appMetrics, "App metrics currently unavailable.");
+    IllegalStateError.assert(appMetrics, "App metrics currently unavailable.");
     return structuredClone(appMetrics);
 }
 
 export const writeAppMetrics = async (props: Partial<Entities.AppMetrics>): Promise<void> => {
-    assert(appMetrics, "App metrics currently unavailable.");
+    IllegalStateError.assert(appMetrics, "App metrics currently unavailable.");
     appMetrics = { ...appMetrics, ...props };
 }
 
@@ -53,7 +53,7 @@ const gameHistoryStore = {
 let players: Record<string, Entities.EnhancedPlayer> = {}
 
 export const readPlayer = async (username: string): Promise<Entities.EnhancedPlayer> => {
-    assert(username in players, "Player not found.");
+    InvalidInputError.assert(username in players, "Player not found.");
     return structuredClone(players[username]);
 }
 
@@ -62,7 +62,7 @@ export const createPlayer = async (username: string, props: Entities.EnhancedPla
 }
 
 export const writePlayer = async (username: string, props: Partial<Entities.EnhancedPlayer>): Promise<void> => {
-    assert(username in players, "Player not found.");
+    InvalidInputError.assert(username in players, "Player not found.");
     players[username] = { ...players[username], ...props };
 }
 
@@ -71,7 +71,7 @@ export const dropPlayer = async (username: string): Promise<void> => {
 }
 
 export const pushTaskSubmission = async (username: string, props: Entities.TaskSubmission): Promise<void> => {
-    assert(username in players, "Player not found.");
+    InvalidInputError.assert(username in players, "Player not found.");
     players[username].tasksSubmitted.push(props);
 }
 
@@ -92,7 +92,7 @@ const playerStore = {
 let admins: Record<string, Entities.Admin> = {}
 
 const readAdmin = async (username: string): Promise<Entities.Admin> => {
-    assert(username in admins, "Admin not found.");
+    InvalidInputError.assert(username in admins, "Admin not found.");
     return structuredClone(admins[username]);
 }
 
@@ -104,14 +104,14 @@ const readOptionalAdmin = async (username: string): Promise<Entities.Admin | und
 const createAdmins = async (props: Entities.Admin[]): Promise<void> => {
     for(const admin of props) {
         if(admin.username in admins) {
-            throw new Error("Admin already exists.");
+            throw new InvalidInputError("Admin already exists.");
         }
         admins[admin.username] = structuredClone(admin);
     }
 }
 
 const writeAdmin = async (username: string, props: Partial<Entities.Admin>): Promise<void> => {
-    assert(username in admins, "Admin not found.");
+    InvalidInputError.assert(username in admins, "Admin not found.");
     admins[username] = { ...admins[username], ...props };
 }
 
@@ -141,19 +141,19 @@ const readLeaderboard = async (): Promise<Entities.LeaderboardEntry[]> => {
 
 const getPlayerInfo = async (username: string): Promise<LeaderboardInfo> => {
     const ranking = leaderboard.findIndex(e => e.username == username) + 1;
-    assert(ranking != 0, "Player not found");
+    InvalidInputError.assert(ranking > 0, "Player not found.");
     return { ...leaderboard[ranking], ranking };
 }
 
 const newPlayer = async (username: string): Promise<number> => {
-    assert(!leaderboard.find(e => e.username == username), "Player already exists.");
+    InvalidInputError.assert(!leaderboard.find(e => e.username == username), "Player already exists.");
     leaderboard.push({ username, score: 0 });
     return leaderboard.length;
 }
 
 const updatePlayerScore = async (username: string, scoreDelta: number): Promise<number> => {
     const entry = leaderboard.find(e => e.username == username);
-    assert(entry, "Player not found");
+    InvalidInputError.assert(entry, "Player not found.");
     entry.score += scoreDelta;
     leaderboard.sort((a, b) => a.score - b.score);
     return leaderboard.findIndex(e => e.username == username) + 1;
@@ -184,29 +184,29 @@ const createGameStats = async (props: Entities.GameStats): Promise<void> => {
 }
 
 const readGameStats = async (): Promise<Entities.GameStats> => {
-    assert(gameStats, "Game stats not currently available.");
+    IllegalStateError.assert(gameStats, "Game stats not currently available.");
     return structuredClone(gameStats);
 }
 
 const readGameConfig = async (): Promise<Entities.GameConfiguration> => {
-    assert(gameStats, "Game config not currently available.");
+    IllegalStateError.assert(gameStats, "Game stats not currently available.");
     return structuredClone(gameStats.configuration);
 }
 
 const readTask = async (taskId: string): Promise<Entities.Task> => {
-    assert(gameStats, "Unable to retrieve task. Game stats not currently available.");
+    IllegalStateError.assert(gameStats, "Unable to retrieve task. Game stats not currently available.");
     const task = gameStats.configuration.tasks.find(t => t.id == taskId);
-    assert(task, "Invalid task ID.");
+    InvalidInputError.assert(task, "Invalid task ID.");
     return structuredClone(task);
 }
 
 const isGameLocked = async (): Promise<boolean> => {
-    assert(gameStats, "Game stats not currently available.");
+    IllegalStateError.assert(gameStats, "Game stats not currently available.");
     return gameStats.locked;
 }
 
 const writeGameStats = async (props: Partial<Entities.GameStats>): Promise<void> => {
-    assert(gameStats, "Game stats not currently available.");
+    IllegalStateError.assert(gameStats, "Game stats not currently available.");
     gameStats = { ...gameStats, ...props };
 }
 
@@ -228,7 +228,7 @@ const gameStatsStore = {
 let users: Record<string, Entities.User> = {};
 
 const readUser = async (username: string): Promise<Entities.User> => {
-    assert(username in users, "Invalid username");
+    InvalidInputError.assert(username in users, "Invalid username");
     return structuredClone(users[username]);
 }
 
@@ -245,6 +245,12 @@ const dropUser = async (username: string): Promise<void> => {
 }
 
 const dropUsers = async (usernames?: string[]): Promise<void> => {
+    if(usernames) {
+        for(const username in usernames) {
+            delete users[username];
+        }
+        return;
+    }
     users = {};
 }
 

@@ -1,14 +1,13 @@
-import { Readable } from "stream";
 import path from "path";
 import fs from "fs";
-import assert from "assert";
 import PDFDocument from 'pdfkit';
 import QRCode from 'qrcode';
-import stream from 'node:stream';
+import stream, { Readable } from "stream";
 
 import { TEMPDIR, UI_CANONICAL } from "../../env";
-import { EXPORT_PDF_FILENAME } from "../../constants";
+import { EXPORT_GAME_PDF_ROUTE, EXPORT_PDF_FILENAME } from "../../constants";
 import { FileStorageCtx } from "../../lib/context";
+import { IllegalStateError } from "../../lib/errors";
 
 const EXPORT_FILEPATH = path.join(TEMPDIR!, EXPORT_PDF_FILENAME);
 
@@ -17,7 +16,7 @@ async function createExportPdfFile(taskIds: string[]): Promise<void> {
 
     // Create the PDF
     const doc = new PDFDocument();
-    doc.pipe(fs.createWriteStream('output.pdf'));
+    doc.pipe(fs.createWriteStream(EXPORT_FILEPATH));
 
     // Document header
     doc
@@ -76,15 +75,15 @@ async function createExportPdfFile(taskIds: string[]): Promise<void> {
     
     // Finalize and persist PDF file
     doc.end();
-    return new Promise((res, rej) => {
-        fs.writeFile(EXPORT_FILEPATH, '', (err) => {
-            if(err) rej(err);
-            res();
-        });
-    });
+}
+
+async function getExportPdfLink(): Promise<string> {
+    IllegalStateError.assert(fs.existsSync(EXPORT_FILEPATH), "Game export does not currently exist.");
+    return EXPORT_GAME_PDF_ROUTE!;
 }
 
 async function getExportPdfFile(): Promise<Readable> {
+    IllegalStateError.assert(fs.existsSync(EXPORT_FILEPATH), "Game export does not currently exist.");
     return fs.createReadStream(EXPORT_FILEPATH);
 }
 
@@ -104,6 +103,7 @@ async function deleteExportPdfFile(): Promise<void> {
 
 export default {
     createExportPdfFile,
+    getExportPdfLink,
     getExportPdfFile,
     deleteExportPdfFile
 } satisfies FileStorageCtx;

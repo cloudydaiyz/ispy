@@ -2,8 +2,8 @@ import { Entities, Requests } from "@cloudydaiyz/ispy-shared";
 import { Context, } from "../context";
 import { getCurrentPointValue } from "../../util";
 import { dropUser, dropUsers } from "./op-helper";
-import { z } from "zod";
-import assert from "assert";
+import { Readable } from "stream";
+import { IllegalStateError, InvalidInputError } from "../errors";
 
 export async function metrics(ctx: Context): Promise<Entities.AppMetrics> {
     return ctx.app.db.appMetricsStore.readAppMetrics();
@@ -25,7 +25,11 @@ export async function getGameHistory(ctx: Context): Promise<Entities.GameHistory
 }
 
 export async function exportGamePdf(ctx: Context): Promise<Entities.GameExport> {
-    return { link: 'Unimplemented' };
+    return { link: await ctx.app.files.getExportPdfLink() };
+}
+
+export async function exportGamePdfFile(ctx: Context): Promise<Readable> {
+    return ctx.app.files.getExportPdfFile();
 }
 
 export async function leaveGame(ctx: Context, request: Entities.Username): Promise<void> {
@@ -39,14 +43,14 @@ export async function submitTask(ctx: Context, request: Requests.SubmitTaskReque
     const username = ctx.local!.req.username;
     const stats = await gameStatsStore.readGameStats();
     const statsUpdate: Partial<Entities.GameStats> = {};
-    assert(stats.state == "running", "Cannot submit task. The game hasn't started yet.");
+    IllegalStateError.assert(stats.state == "running", "Cannot submit task. The game hasn't started yet.");
 
     const config = stats.configuration;
     const task = config.tasks.find(t => t.id! == request.taskId);
-    assert(task, "Invalid task ID.");
+    InvalidInputError.assert(task, "Invalid task ID.");
 
     const responses = task.responses.filter(t => request.responses.includes(t.id!));
-    assert(responses.length == request.responses.length, "Some task IDs provided are invalid. "
+    InvalidInputError.assert(responses.length == request.responses.length, "Some task IDs provided are invalid. "
         + "Please validate your task IDs and retry.");
     
     const player = await playerStore.readPlayer(username!);
@@ -96,7 +100,7 @@ export async function submitTask(ctx: Context, request: Requests.SubmitTaskReque
 export async function startGame(ctx: Context): Promise<void> {
     const { gameStatsStore, appMetricsStore } = ctx.app.db;
     const stats = await gameStatsStore.readGameStats();
-    assert(stats.state == "ready", "Unable to start game. The game is not in a ready state.");
+    IllegalStateError.assert(stats.state == "ready", "Unable to start game. The game is not in a ready state.");
 
     await gameStatsStore.writeGameStats({ state: "running", startTime: Date.now() });
     await appMetricsStore.writeAppMetrics({ gameState: "running" });
@@ -112,10 +116,10 @@ export async function viewPlayerInfo(ctx: Context, request: Entities.Username): 
 
 export async function viewTaskInfo(ctx: Context, request: Entities.TaskId): Promise<Entities.PublicTask> {
     const gameStats = await ctx.app.db.gameStatsStore.readGameStats();
-    assert(gameStats.state == "running", "Game has not stared yet.");
+    IllegalStateError.assert(gameStats.state == "running", "Game has not stared yet.");
     
     const task = gameStats.configuration.tasks.find(t => t.id == request.taskId);
-    assert(task, "Invalid task ID.");
+    InvalidInputError.assert(task, "Invalid task ID.");
 
     const publicTask = Entities.PublicTaskModel.parse(task);
     return publicTask;
@@ -134,7 +138,7 @@ export async function kickAllPlayers(ctx: Context): Promise<void> {
 
 export async function viewGameInfo(ctx: Context): Promise<Entities.PublicGameStats> {
     const gameStats = await ctx.app.db.gameStatsStore.readGameStats();
-    assert(gameStats.state == "running", "Game has not stared yet.");
+    IllegalStateError.assert(gameStats.state == "running", "Game has not stared yet.");
     const publicGameStats = Entities.PublicGameStatsModel.parse(gameStats);
     return publicGameStats;
 }
@@ -160,7 +164,7 @@ export async function viewGameHostInfo(ctx: Context): Promise<Entities.Game> {
 export async function endGame(ctx: Context): Promise<void> {
     const db = ctx.app.db;
     const stats = await db.gameStatsStore.readGameStats();
-    assert(stats.state == "running", "Unable to end game. The game is not already running.");
+    IllegalStateError.assert(stats.state == "running", "Unable to end game. The game is not already running.");
 
     const game = await viewGameHostInfo(ctx);
     await db.gameHistoryStore.pushGame(game);
@@ -178,6 +182,7 @@ export async function endGame(ctx: Context): Promise<void> {
     ctx.sock.to('all').gameEnded(game);
     ctx.sock.disconnect('all');
 
+    await ctx.app.files.deleteExportPdfFile();
     if(!ctx.local!.req.scheduled) {
         await ctx.app.scheduler.cancelSchedule("end-game");
     }
