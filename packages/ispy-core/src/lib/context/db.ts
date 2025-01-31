@@ -4,8 +4,8 @@ import { Entities } from "@cloudydaiyz/ispy-shared";
 interface UserStore {
     readUser: (username: string) => Promise<Entities.User>;
     readOptionalUser: (username: string) => Promise<Entities.User | undefined>;
-    // cannot edit user info once it's stored
-    // user w/ username must not already exist in the db
+    // Cannot edit user info once it's stored
+    // User w/ username must not already exist in the db
     writeUser: (username: string, props: Entities.User) => Promise<void>;
     dropUser: (username: string) => Promise<void>;
     dropUsers: (usernames?: string[]) => Promise<void>;
@@ -27,12 +27,12 @@ export type LeaderboardInfo = Entities.LeaderboardEntry & { ranking: number };
 interface LeaderboardStore {
     readLeaderboard: () => Promise<Entities.LeaderboardEntry[]>;
     getPlayerInfo: (username: string) => Promise<LeaderboardInfo>;
-    // returns the player's rank
+    // Returns the player's rank
     newPlayer: (username: string) => Promise<number>;
-    // returns the player's new rank
+    // Returns the player's new rank
     updatePlayerScore: (username: string, scoreDelta: number) => Promise<number>;
     dropPlayer: (username: string) => Promise<void>;
-    // clears the leaderboard
+    // Clears the leaderboard
     dropLeaderboard: () => Promise<void>;
 }
 
